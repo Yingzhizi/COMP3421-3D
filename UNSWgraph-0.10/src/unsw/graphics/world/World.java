@@ -42,7 +42,7 @@ public class World extends Application3D implements MouseListener{
      * @throws FileNotFoundException
      */
     public static void main(String[] args) throws FileNotFoundException {
-        Terrain terrain = LevelIO.load(new File("/Users/yingzhizhou/Desktop/UNSWgraph-0.10/res/worlds/test4.json"));
+        Terrain terrain = LevelIO.load(new File(args[0]));//"/Users/yingzhizhou/Desktop/UNSWgraph-0.10/res/worlds/test4.json"));
         World world = new World(terrain);
         world.start();
     }
