@@ -17,7 +17,7 @@ import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
 
 /**
- * COMMENT: Comment Game 
+ * COMMENT: Comment Game
  *
  * @author malcolmr
  */
@@ -32,22 +32,23 @@ public class World extends Application3D implements MouseListener{
     public World(Terrain terrain) {
     	super("Assignment 2", 1000, 1000);
         this.terrain = terrain;
-   
+
     }
-   
+
     /**
      * Load a level file and display it.
-     * 
+     *
      * @param args - The first argument is a level file in JSON format
      * @throws FileNotFoundException
      */
     public static void main(String[] args) throws FileNotFoundException {
-        Terrain terrain = LevelIO.load(new File("/Users/yingzhizhou/Desktop/UNSWgraph-0.10/res/worlds/test4.json"));
+        Terrain terrain = LevelIO.load(new File("/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test4.json"));
         World world = new World(terrain);
         world.start();
     }
 
 	@Override
+	//test
 	public void display(GL3 gl) {
 		super.display(gl);
 		//Shader.setPenColor(gl, Color.GREEN);
