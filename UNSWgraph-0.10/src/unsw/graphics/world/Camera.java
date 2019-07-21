@@ -96,17 +96,18 @@ public class Camera implements KeyListener {
         // for testing, cannot do continuous
         this.rotateY = this.rotateY + this.currentTurnSpeed * 1;
         float distance = this.currentSpeend * 1;
-        float x = distance * (float)Math.sin(Math.toRadians(this.rotateY));
-        float z = distance * (float)Math.cos(Math.toRadians(this.rotateY));
+        float changeInX = distance * (float)Math.sin(Math.toRadians(this.rotateY));
+        float changeInZ = distance * (float)Math.cos(Math.toRadians(this.rotateY));
 
         // get y position
-        float y = myTerrain.altitude(x, z);
+        float oldY = myTerrain.altitude(this.position.getX(), this.position.getY());
+        float newY = myTerrain.altitude(this.position.getX() + changeInX, this.position.getZ()+changeInZ);
 
         // calculate the increment/decrement in y axis
-        y = y - position.getY() + 0.5f;
+        float changeInY = newY - oldY;
 
         // update the camera position
-        this.position = this.position.translate(x, y, z);
+        this.position = this.position.translate(changeInX, changeInY, changeInZ);
 
         // test
         System.out.println("x: " + this.position.getX() + "y: " + this.position.getY() + "z: " + this.position.getZ());
@@ -115,6 +116,7 @@ public class Camera implements KeyListener {
     }
 
     public CoordFrame3D resetFrame() {
+        // update new cameraPosition
         CoordFrame3D frame = CoordFrame3D.identity().translate(0, 0, -2.4f).scale(0.3f, 0.3f, 0.3f);
         frame = frame.rotateY(-this.rotateY);
         frame = frame.translate(-1 * this.position.getX(), -1 * this.position.getY(), -1 * this.getPosition().getZ());
