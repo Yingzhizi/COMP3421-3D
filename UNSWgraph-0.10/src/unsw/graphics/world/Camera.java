@@ -70,7 +70,27 @@ public class Camera implements KeyListener {
     public void keyReleased(KeyEvent e) {
 
     }
-
+//    public void moveForward() {
+//        this.currentSpeend = -runSpeed;
+//        float distance = this.currentSpeend * 1;
+//        float x = -1 * distance * (float)Math.sin(-1 * Math.toRadians(this.rotateY));
+//        float z = distance * (float)Math.cos(-1 * Math.toRadians(this.rotateY));
+//        // get y position
+//        float y = myTerrain.altitude(x, z);
+//
+//        // calculate the increment/decrement in y axis
+//        y = y - position.getY() + 0.5f;
+//
+//        // update the camera position
+//        this.position = this.position.translate(x, y, z);
+//
+//        // test
+//        System.out.println("x: " + this.position.getX() + "y: " + this.position.getY() + "z: " + this.position.getZ());
+//    }
+//
+//    public void moveBackward() {
+//        this.currentSpeend = runSpeed;
+//    }
     // camera will move with key press
     public void move() {
         // for testing, cannot do continuous

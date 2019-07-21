@@ -127,6 +127,10 @@ public class Terrain {
         	topZ = bottomZ + 1;
         }
 
+//        int leftX = (int)Math.floor(x);
+//        int rightX = leftX + 1;
+//        int bottomZ = (int)Math.floor(z);
+//        int topZ = bottomZ + 1;
         // test point is above or below a line
         // p1(leftX, topZ) p0(rightX, topZ)
         // -----------
@@ -226,7 +230,7 @@ public class Terrain {
     private float bilinearInterpolate(float x, float x1, float hypotenuse, float lipz1, float lipz2) {
     	return ((x - x1)/(hypotenuse - x1)) * lipz1 + ((hypotenuse - x)/(hypotenuse - x1) * lipz2);
     }
-    
+
     private float linearInterPolateZ(float z, float z1, float z2, float x1, float x2) {
     	return (float) (((z - z1) /(z2 - z1)) * getGridAltitude((int) x2, (int)z2) +
     			((z2 - z)/(z2 - z1)) * getGridAltitude((int)x1, (int)z1));
