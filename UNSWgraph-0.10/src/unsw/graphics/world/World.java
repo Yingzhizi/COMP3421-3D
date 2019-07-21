@@ -34,7 +34,7 @@ public class World extends Application3D{
     public World(Terrain terrain) {
     	super("Assignment 2", 1000, 1000);
         this.terrain = terrain;
-        this.camera = new Camera(new Point3D(0, 0, 0), this.terrain, 0);
+        this.camera = new Camera(new Point3D(0.5f, 0.5f, 0.5f), this.terrain);
 
     }
 
@@ -55,7 +55,10 @@ public class World extends Application3D{
 	public void display(GL3 gl) {
 		super.display(gl);
 		//Shader.setPenColor(gl, Color.GREEN);
-		CoordFrame3D frame = CoordFrame3D.identity().translate(0, 0, -2.4f).scale(0.3f, 0.3f, 0.3f).rotateX(rotateX).rotateY(rotateY);
+		//CoordFrame3D frame = CoordFrame3D.identity().translate(0, 0, -2.4f).scale(0.3f, 0.3f, 0.3f).rotateX(rotateX).rotateY(rotateY);
+
+		// change with camera
+		CoordFrame3D frame = camera.resetFrame();
 		terrain.draw(gl, frame);
 
 	}

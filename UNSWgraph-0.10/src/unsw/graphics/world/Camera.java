@@ -30,10 +30,10 @@ public class Camera implements KeyListener {
     private float rotateY;
 
 
-    public Camera(Point3D position, Terrain terrain, float rotateY) {
+    public Camera(Point3D position, Terrain terrain) {
         this.position = position;
         this.myTerrain = terrain;
-        this.rotateY = rotateY;
+        this.rotateY = 0;
     }
 
     public Point3D getPosition() {
@@ -45,10 +45,10 @@ public class Camera implements KeyListener {
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
         if(keyCode == KeyEvent.VK_UP) {
-            this.currentSpeend = runSpeed;
+            this.currentSpeend = -runSpeed;
             System.out.println("I press up");
         } else if(keyCode == KeyEvent.VK_DOWN) {
-            this.currentSpeend = -runSpeed;
+            this.currentSpeend = runSpeed;
             System.out.println("I press down");
         } else {
             this.currentSpeend = 0;
@@ -63,6 +63,7 @@ public class Camera implements KeyListener {
         } else {
             this.currentTurnSpeed = 0;
         }
+        move();
     }
 
     @Override
@@ -71,8 +72,7 @@ public class Camera implements KeyListener {
     }
 
     // camera will move with key press
-    public void move(KeyEvent e) {
-        keyPressed(e);
+    public void move() {
         // for testing, cannot do continuous
         this.rotateY = this.rotateY + this.currentTurnSpeed * 1;
         float distance = this.currentSpeend * 1;
@@ -83,10 +83,23 @@ public class Camera implements KeyListener {
         float y = myTerrain.altitude(x, z);
 
         // calculate the increment/decrement in y axis
-        y -= position.getY();
+        y = y - position.getY() + 0.5f;
 
         // update the camera position
         this.position = this.position.translate(x, y, z);
+
+        // test
+        System.out.println("x: " + this.position.getX() + "y: " + this.position.getY() + "z: " + this.position.getZ());
+
+
+    }
+
+    public CoordFrame3D resetFrame() {
+        CoordFrame3D frame = CoordFrame3D.identity().translate(0, 0, -2.4f).scale(0.3f, 0.3f, 0.3f);
+        frame = frame.rotateY(-this.rotateY);
+        frame = frame.translate(-1 * this.position.getX(), -1 * this.position.getY(), -1 * this.getPosition().getZ());
+
+        return frame;
     }
 
 }
