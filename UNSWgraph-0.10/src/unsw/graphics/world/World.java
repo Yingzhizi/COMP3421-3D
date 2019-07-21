@@ -1,12 +1,12 @@
 package unsw.graphics.world;
 
 import java.awt.Color;
+import com.jogamp.newt.event.KeyAdapter;
+import com.jogamp.newt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import com.jogamp.newt.event.MouseEvent;
-import com.jogamp.newt.event.MouseListener;
 import com.jogamp.opengl.GL3;
 
 import unsw.graphics.Application3D;
@@ -21,9 +21,11 @@ import unsw.graphics.geometry.Point3D;
  *
  * @author malcolmr
  */
-public class World extends Application3D implements MouseListener{
+public class World extends Application3D{
 
     private Terrain terrain;
+    private Camera camera;
+
 	private Point2D myMousePoint = null;
 	private static final int ROTATION_SCALE = 1;
 	private float rotateX = 0;
@@ -32,6 +34,7 @@ public class World extends Application3D implements MouseListener{
     public World(Terrain terrain) {
     	super("Assignment 2", 1000, 1000);
         this.terrain = terrain;
+        this.camera = new Camera(new Point3D(0, 0, 0), this.terrain, 0);
 
     }
 
@@ -65,7 +68,6 @@ public class World extends Application3D implements MouseListener{
 	@Override
 	public void init(GL3 gl) {
 		super.init(gl);
-		getWindow().addMouseListener(this);
 		Shader shader = new Shader(gl, "shaders/vertex_phong.glsl",
 				"shaders/fragment_phong.glsl");
 		shader.use(gl);
@@ -82,6 +84,7 @@ public class World extends Application3D implements MouseListener{
 		Shader.setFloat(gl, "phongExp", 16f);
 
 		terrain.init(gl);
+		getWindow().addKeyListener(this.camera);
 	}
 
 	@Override
@@ -90,43 +93,4 @@ public class World extends Application3D implements MouseListener{
         Shader.setProjMatrix(gl, Matrix4.perspective(60, width/(float)height, 1, 100));
 	}
 
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		Point2D p = new Point2D(e.getX(), e.getY());
-
-		if (myMousePoint != null) {
-			float dx = p.getX() - myMousePoint.getX();
-			float dy = p.getY() - myMousePoint.getY();
-
-			// Note: dragging in the x dir rotates about y
-			//       dragging in the y dir rotates about x
-			rotateY += dx * ROTATION_SCALE;
-			rotateX += dy * ROTATION_SCALE;
-
-		}
-		myMousePoint = p;
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent e) {
-		myMousePoint = new Point2D(e.getX(), e.getY());
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) { }
-
-	@Override
-	public void mouseEntered(MouseEvent e) { }
-
-	@Override
-	public void mouseExited(MouseEvent e) { }
-
-	@Override
-	public void mousePressed(MouseEvent e) { }
-
-	@Override
-	public void mouseReleased(MouseEvent e) { }
-
-	@Override
-	public void mouseWheelMoved(MouseEvent e) { }
- }
+}

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package unsw.graphics;
 
@@ -14,7 +14,7 @@ import unsw.graphics.geometry.Point3D;
 /**
  * A buffer of points. Can be passed to OpenGL commands that expect buffers by
  * using the getBuffer() method.
- * 
+ *
  * @author Robert Clifton-Everest
  *
  */
@@ -26,7 +26,7 @@ public class Point3DBuffer {
 
     /**
      * Construct a new buffer with the given capacity.
-     * 
+     *
      * @param capacity
      */
     public Point3DBuffer(int capacity) {
@@ -44,7 +44,7 @@ public class Point3DBuffer {
 
     /**
      * Add a {@link Point3D} to the buffer at the given index.
-     * 
+     *
      * @param index
      * @param p
      */
@@ -55,7 +55,7 @@ public class Point3DBuffer {
     /**
      * Add a point (given as an x-y-z coordinate) to the buffer at the given
      * index.
-     * 
+     *
      * @param index
      * @param x
      * @param y

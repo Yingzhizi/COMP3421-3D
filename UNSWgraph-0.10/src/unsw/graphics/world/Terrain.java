@@ -30,6 +30,7 @@ public class Terrain {
     private List<Road> roads;
     private Vector3 sunlight;
     private TriangleMesh terrainMesh;
+    private Texture terr;
 
 
     /**
@@ -107,14 +108,24 @@ public class Terrain {
 
         // TODO: Implement this
         // out of bound
-        if (x < 0 || x > width - 1 || z < 0 || z > depth - 1) {
+        if (x < 0 || x > width || z < 0 || z > depth) {
             return altitude;
         }
 
         int leftX = (int)Math.floor(x);
-        int rightX = leftX + 1;
+        int rightX;// = leftX + 1;
+        if(leftX + 1 == width) {
+        	rightX = leftX;
+        } else {
+        	rightX = leftX + 1;
+        }
         int bottomZ = (int)Math.floor(z);
-        int topZ= bottomZ + 1;
+        int topZ;// = bottomZ + 1;
+        if(bottomZ + 1 == depth) {
+        	topZ = bottomZ;
+        } else {
+        	topZ = bottomZ + 1;
+        }
 
         // test point is above or below a line
         // p1(leftX, topZ) p0(rightX, topZ)
@@ -131,68 +142,100 @@ public class Terrain {
         // p2(leftX, bottomZ) p3(rightX, bottomZ)
         // if x, and z are the whole number, get altitude
 
-        if ((int)x == x && (int)z == z) {
-            System.out.println("whole number: " + (float)getGridAltitude((int)x, (int)z));
-            return (float)getGridAltitude((int)x, (int)z);
-
-        } else if ((int)x == x && (int)z != z) {
-            altitude = linearInterpolation(z, (int)x, bottomZ, (int)x, topZ);
-            System.out.println("x is whole number: " + altitude);
-
-        } else if ((int)z == z && (int)x != x) {
-
-            altitude = linerInterpolationX(x, leftX, rightX, (float)getGridAltitude(leftX, (int)z), (float)getGridAltitude(rightX, (int)z));
-            System.out.println("z is whole number: " + altitude);
-
+//        if ((int)x == x && (int)z == z) {
+//            System.out.println("whole number: " + (float)getGridAltitude((int)x, (int)z));
+//            return (float)getGridAltitude((int)x, (int)z);
+//
+//        } else if ((int)x == x && (int)z != z) {
+//            altitude = linearInterpolation(z, (int)x, bottomZ, (int)x, topZ);
+//            System.out.println("x is whole number: " + altitude);
+//
+//        } else if ((int)z == z && (int)x != x) {
+//
+//            altitude = linerInterpolationX(x, leftX, rightX, (float)getGridAltitude(leftX, (int)z), (float)getGridAltitude(rightX, (int)z));
+//            System.out.println("z is whole number: " + altitude);
+//
+//        } else {
+//                // first, check if the given point P(x, z) lies in on diagonal, or above/below
+//                float val = (((x - (float)leftX) * ((float)topZ - (float)bottomZ)) / ((float)rightX - (float)leftX)) + (float)bottomZ;
+//                // if point line in the line
+//                if (val == z) {
+//                    altitude = linearInterpolation(z, leftX, bottomZ, rightX, topZ);
+//                    System.out.println("point lie in the diagonal: " + altitude);
+//
+//                } else if (z > val) {
+//                    // above the line, intersect with p1-p2 and p0-p2
+//                    float left = linearInterpolation(z, leftX, bottomZ, leftX, topZ);
+//                    float right = linearInterpolation(z, leftX, bottomZ, rightX, topZ);
+//                    float interSec = interSectionL(z, leftX, bottomZ, rightX, topZ);
+//                    altitude = linerInterpolationX(x, (float)leftX, interSec, left, right);
+//                    System.out.println("point lie above the diagonal: " + altitude);
+//
+//                } else {
+//                    // below the line, intersect with p2-p0 and p3-p0
+//                    float left = linearInterpolation(z, leftX, bottomZ, rightX, topZ);
+//                    float right = linearInterpolation(z, rightX, bottomZ, rightX, topZ);
+//                    float interSec = interSectionL(z, leftX, bottomZ, rightX, topZ);
+//                    altitude = linerInterpolationX(x, interSec, (float)rightX, left, right);
+//                    System.out.println("point lie below the diagonal: " + altitude);
+//                }
+//        }
+        //+++++++++++++++++++++++MAGIC+++++++++++++++++++++++++++++
+        float hypotenuse = leftX + topZ - z;
+        if(leftX == rightX && topZ == bottomZ) {
+        	return (float) getGridAltitude(leftX, bottomZ);
+        }
+        if(x < hypotenuse) {
+        	float lipz1 = linearInterPolateZ(z, topZ, bottomZ, leftX, rightX);
+        	float lipz2 = linearInterPolateZ(z, topZ, bottomZ, leftX, leftX);
+        	altitude = bilinearInterpolate(x, (float)leftX, hypotenuse, lipz1, lipz2);
+        } else if(leftX == x || rightX == x) {
+        	altitude = linearInterPolateZ(z, bottomZ, topZ, x, x);
+        } else if(topZ == z || bottomZ == z) {
+        	altitude = linearInterPolateX(x, leftX, rightX, z, z);
         } else {
-                // first, check if the given point P(x, z) lies in on diagonal, or above/below
-                float val = (((x - (float)leftX) * ((float)topZ - (float)bottomZ)) / ((float)rightX - (float)leftX)) + (float)bottomZ;
-                // if point line in the line
-                if (val == z) {
-                    altitude = linearInterpolation(z, leftX, bottomZ, rightX, topZ);
-                    System.out.println("point lie in the diagonal: " + altitude);
-
-                } else if (z > val) {
-                    // above the line, intersect with p1-p2 and p0-p2
-                    float left = linearInterpolation(z, leftX, bottomZ, leftX, topZ);
-                    float right = linearInterpolation(z, leftX, bottomZ, rightX, topZ);
-                    float interSec = interSectionL(z, leftX, bottomZ, rightX, topZ);
-                    altitude = linerInterpolationX(x, (float)leftX, interSec, left, right);
-                    System.out.println("point lie above the diagonal: " + altitude);
-
-                } else {
-                    // below the line, intersect with p2-p0 and p3-p0
-                    float left = linearInterpolation(z, leftX, bottomZ, rightX, topZ);
-                    float right = linearInterpolation(z, rightX, bottomZ, rightX, topZ);
-                    float interSec = interSectionL(z, leftX, bottomZ, rightX, topZ);
-                    altitude = linerInterpolationX(x, interSec, (float)rightX, left, right);
-                    System.out.println("point lie below the diagonal: " + altitude);
-                }
+        	float lipz1 = linearInterPolateZ(z, topZ, bottomZ, leftX, rightX);
+        	float lipz2 = linearInterPolateZ(z, topZ, bottomZ, leftX, leftX);
+        	altitude = bilinearInterpolate(x, (float)leftX, hypotenuse, lipz1, lipz2);
         }
         return altitude;
     }
 
-    /**
-     * Use bilinear Interpolation to calculate the depth of the
-     * @return
-     */
-    public float linearInterpolation(float z, int x1, int z1, int x2, int z2) {
-        float altitude = ((z - (float)z1)/((float)z2 - (float)z1)) * (float)getGridAltitude(x2, z2) + (((float)z2 - z) / ((float)z2 - (float)z1)) * (float)getGridAltitude(x1, z1);
-        return altitude;
+//    /**
+//     * Use bilinear Interpolation to calculate the depth of the
+//     * @return
+//     */
+//    public float linearInterpolation(float z, int x1, int z1, int x2, int z2) {
+//        float altitude = ((z - (float)z1)/((float)z2 - (float)z1)) * (float)getGridAltitude(x2, z2) + (((float)z2 - z) / ((float)z2 - (float)z1)) * (float)getGridAltitude(x1, z1);
+//        return altitude;
+//    }
+//
+//    public float linerInterpolationX(float x, float x1, float x2, float y1, float y2) {
+//        return ((x - x1)/(x2 - x1)) * y2 + ((x2 - x)/(x2 - x1)) * y1;
+//    }
+//
+//    public float interSectionL(float y, float x0, float y0, float x1, float y1) {
+//        return (((x1 - x0) * (y - y0)) / (y1 - y0)) + x0;
+//    }
+//
+//    public float interSectionR(float y, float x0, float y0, float x1, float y1) {
+//        return (x1 - x0) * (y1 - y)/(y1 - y0) + x1;
+//    }
+    
+    //================================MINE===========
+    private float bilinearInterpolate(float x, float x1, float hypotenuse, float lipz1, float lipz2) {
+    	return ((x - x1)/(hypotenuse - x1)) * lipz1 + ((hypotenuse - x)/(hypotenuse - x1) * lipz2);
     }
-
-    public float linerInterpolationX(float x, float x1, float x2, float y1, float y2) {
-        return ((x - x1)/(x2 - x1)) * y2 + ((x2 - x)/(x2 - x1)) * y1;
+    
+    private float linearInterPolateZ(float z, float z1, float z2, float x1, float x2) {
+    	return (float) (((z - z1) /(z2 - z1)) * getGridAltitude((int) x2, (int)z2) +
+    			((z2 - z)/(z2 - z1)) * getGridAltitude((int)x1, (int)z1));
     }
-
-    public float interSectionL(float y, float x0, float y0, float x1, float y1) {
-        return (((x1 - x0) * (y - y0)) / (y1 - y0)) + x0;
+    private float linearInterPolateX(float x, float x1, float x2, float z1, float z2) {
+    	return (float) (((x - x1)/ (x2 - x1)) *getGridAltitude((int) x2, (int)z2)
+    			+ ((x2 - x)/ (x2 - x1)) * getGridAltitude ((int) x1, (int) z1));
     }
-
-    public float interSectionR(float y, float x0, float y0, float x1, float y1) {
-        return (x1 - x0) * (y1 - y)/(y1 - y0) + x1;
-    }
-
+    
     /**
      * Add a tree at the specified (x,z) point.
      * The tree's y coordinate is calculated from the altitude of the terrain at that point.
