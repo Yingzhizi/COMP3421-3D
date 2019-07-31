@@ -19,9 +19,12 @@ uniform float phongExp;
 in vec4 viewPosition;
 in vec3 m;
 
+uniform sampler2D tex;
+
 void main()
 {
     vec3 m_unit = normalize(m);
+
     // Compute the s, v and r vectors
     vec3 s = normalize(view_matrix*vec4(lightPos,1) - viewPosition).xyz;
     vec3 v = normalize(-viewPosition.xyz);

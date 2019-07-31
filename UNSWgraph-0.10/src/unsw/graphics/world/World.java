@@ -34,7 +34,7 @@ public class World extends Application3D{
     public World(Terrain terrain) {
     	super("Assignment 2", 1000, 1000);
         this.terrain = terrain;
-        this.camera = new Camera(new Point3D(0, 0.5f, 0), this.terrain);
+        this.camera = new Camera(new Point3D(0, 0, 0), this.terrain);
 
     }
 
@@ -59,6 +59,7 @@ public class World extends Application3D{
 
 		// change with camera
 		CoordFrame3D frame = camera.resetFrame();
+		//Shader.setViewMatrix(gl, frame.getMatrix());
 		terrain.draw(gl, frame);
 
 	}
@@ -71,20 +72,23 @@ public class World extends Application3D{
 	@Override
 	public void init(GL3 gl) {
 		super.init(gl);
-		Shader shader = new Shader(gl, "shaders/vertex_phong.glsl",
-				"shaders/fragment_phong.glsl");
+		Shader shader = new Shader(gl, "shaders/vertex_tex_3d.glsl",
+				"shaders/fragment_tex_3d.glsl");
 		shader.use(gl);
 
 		// Set the lighting properties
 		Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
 		Shader.setColor(gl, "lightIntensity", Color.WHITE);
-		Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
+		Shader.setColor(gl, "sunlightIntensity", Color.WHITE);
+		Shader.setColor(gl, "ambientIntensity", new Color(0.5f, 0.5f, 0.5f));
 
 		// Set the material properties
 		Shader.setColor(gl, "ambientCoeff", Color.WHITE);
-		Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
-		Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
+		Shader.setColor(gl, "diffuseCoeff", new Color(0.6f, 0.6f, 0.6f));
+		Shader.setColor(gl, "specularCoeff", new Color(0.3f, 0.3f, 0.3f));
 		Shader.setFloat(gl, "phongExp", 16f);
+		Shader.setInt(gl, "tex", 0);
+		Shader.setPoint3D(gl, "viewPosition", camera.getPosition());
 
 		terrain.init(gl);
 		getWindow().addKeyListener(this.camera);

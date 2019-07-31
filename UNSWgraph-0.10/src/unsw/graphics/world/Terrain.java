@@ -11,6 +11,7 @@ import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
 import unsw.graphics.*;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 
 
@@ -30,7 +31,7 @@ public class Terrain {
     private List<Road> roads;
     private Vector3 sunlight;
     private TriangleMesh terrainMesh;
-    private Texture terr;
+    private Texture texture;
 
 
     /**
@@ -331,9 +332,21 @@ public class Terrain {
         terrainMesh.init(gl);
     }
 
+    // add texture to terrain
+    public void loadTexture(GL3 gl) {
+        this.texture = new Texture(gl, "res/textures/grass.bmp", "bmp", false);
+    }
+
     public void drawTerrain(GL3 gl, CoordFrame3D frame) {
-        // set color of terrian to green
-        Shader.setPenColor(gl, Color.GREEN);
+        // set texture
+//        loadTexture(gl);
+//        // use texture
+//        Shader.setInt(gl, "tex", 0);
+//
+//        gl.glActiveTexture(GL.GL_TEXTURE0);
+//        gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
+        Shader.setPenColor(gl, Color.WHITE);
+
         terrainMesh.draw(gl, frame);
 
     }

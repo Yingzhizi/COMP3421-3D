@@ -46,23 +46,30 @@ public class Camera implements KeyListener {
         int keyCode = e.getKeyCode();
         if(keyCode == KeyEvent.VK_UP) {
             this.currentSpeend = -runSpeed;
+            this.currentTurnSpeed = 0;
+            //move();
             System.out.println("I press up");
-        } else if(keyCode == KeyEvent.VK_DOWN) {
+        }
+        if(keyCode == KeyEvent.VK_DOWN) {
             this.currentSpeend = runSpeed;
+            this.currentTurnSpeed = 0;
+            //move();
             System.out.println("I press down");
-        } else {
-            this.currentSpeend = 0;
         }
 
         if(keyCode == KeyEvent.VK_LEFT) {
             this.currentTurnSpeed = turnSpeed;
+            this.currentSpeend = 0;
+            //move();
             System.out.println("I press left");
-        } else if(keyCode == KeyEvent.VK_RIGHT) {
-            this.currentTurnSpeed = -turnSpeed;
-            System.out.println("I press right");
-        } else {
-            this.currentTurnSpeed = 0;
         }
+        if(keyCode == KeyEvent.VK_RIGHT) {
+            this.currentTurnSpeed = -turnSpeed;
+            this.currentSpeend = 0;
+            //move();
+            System.out.println("I press right");
+        }
+
         move();
     }
 
@@ -100,7 +107,7 @@ public class Camera implements KeyListener {
         float changeInZ = distance * (float)Math.cos(Math.toRadians(this.rotateY));
 
         // get y position
-        float oldY = myTerrain.altitude(this.position.getX(), this.position.getY());
+        float oldY = myTerrain.altitude(this.position.getX(), this.position.getZ());
         float newY = myTerrain.altitude(this.position.getX() + changeInX, this.position.getZ()+changeInZ);
 
         // calculate the increment/decrement in y axis
