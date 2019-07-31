@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c521170c-c8f0-413b-a826-7362e77f095a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/shaders/fragment_tex_phong.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/fragment_phong.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/fragment_phong.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/unsw/graphics/world/Camera.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/unsw/graphics/world/Camera.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shaders/fragment_tex_phong.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/fragment_tex_phong.glsl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/unsw/graphics/world/Terrain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/unsw/graphics/world/Terrain.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/unsw/graphics/world/World.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/unsw/graphics/world/World.java" afterDir="false" />
     </list>
@@ -22,14 +19,33 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="311">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/unsw/graphics/world/World.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1125">
-              <caret line="77" lean-forward="true" selection-start-line="77" selection-end-line="77" />
+            <state relative-caret-position="187">
+              <caret line="47" column="119" selection-start-line="47" selection-start-column="119" selection-end-line="47" selection-end-column="119" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/worlds/test6.json">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/worlds/test7.json">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/worlds/test1.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="435">
+              <caret line="29" selection-start-line="29" selection-end-line="29" />
             </state>
           </provider>
         </entry>
@@ -53,36 +69,6 @@
               <caret line="113" column="37" selection-start-line="113" selection-start-column="37" selection-end-line="113" selection-end-column="37" />
               <folding>
                 <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/shaders/fragment_phong.glsl">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="660">
-              <caret line="44" column="48" selection-start-line="42" selection-start-column="4" selection-end-line="44" selection-end-column="48" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/unsw/graphics/Shader.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3975">
-              <caret line="281" column="1" selection-start-line="281" selection-start-column="1" selection-end-line="281" selection-end-column="1" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-                <element signature="imports" expanded="true" />
-                <element signature="e#3645#3646#0" expanded="true" />
-                <element signature="e#3680#3681#0" expanded="true" />
-                <element signature="e#3857#3858#0" expanded="true" />
-                <element signature="e#3895#3896#0" expanded="true" />
-                <element signature="e#4013#4014#0" expanded="true" />
-                <element signature="e#4038#4039#0" expanded="true" />
-                <element signature="e#6306#6307#0" expanded="true" />
-                <element signature="e#6365#6366#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -116,11 +102,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/unsw/graphics/world/Terrain.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="533">
-              <caret line="346" column="62" lean-forward="true" selection-start-line="341" selection-start-column="10" selection-end-line="346" selection-end-column="62" />
+            <state relative-caret-position="5154">
+              <caret line="373" column="3" selection-start-line="373" selection-start-column="3" selection-end-line="383" selection-end-column="41" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#11280#11281#0" expanded="true" />
@@ -134,7 +120,7 @@
         <entry file="file://$PROJECT_DIR$/shaders/fragment_tex_phong.glsl">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="300">
-              <caret line="20" column="20" selection-start-line="20" selection-start-column="8" selection-end-line="20" selection-end-column="20" />
+              <caret line="20" column="20" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="20" />
             </state>
           </provider>
         </entry>
@@ -161,6 +147,7 @@
       <find>ambientCoeff</find>
       <find>texCoordFrag</find>
       <find>tex</find>
+      <find>textureCoords</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -182,8 +169,8 @@
         <option value="$PROJECT_DIR$/shaders/fragment_phong.glsl" />
         <option value="$PROJECT_DIR$/shaders/fragment_tex_phong.glsl" />
         <option value="$PROJECT_DIR$/src/unsw/graphics/world/Camera.java" />
-        <option value="$PROJECT_DIR$/src/unsw/graphics/world/World.java" />
         <option value="$PROJECT_DIR$/src/unsw/graphics/world/Terrain.java" />
+        <option value="$PROJECT_DIR$/src/unsw/graphics/world/World.java" />
       </list>
     </option>
   </component>
@@ -221,7 +208,8 @@
             <path>
               <item name="UNSWgraph" type="b2602c69:ProjectViewProjectNode" />
               <item name="UNSWgraph-0.10" type="462c0819:PsiDirectoryNode" />
-              <item name="shaders" type="462c0819:PsiDirectoryNode" />
+              <item name="res" type="462c0819:PsiDirectoryNode" />
+              <item name="worlds" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="UNSWgraph" type="b2602c69:ProjectViewProjectNode" />
@@ -378,50 +366,18 @@
       <workItem from="1563278589250" duration="8997000" />
       <workItem from="1563345573708" duration="32913000" />
       <workItem from="1563448394960" duration="17249000" />
-      <workItem from="1564545094567" duration="467000" />
+      <workItem from="1564545094567" duration="3133000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="59626000" />
+    <option name="totallyTimeSpent" value="62292000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="139" y="1080" width="1440" height="900" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.20600858" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Image Layers" order="2" />
-      <window_info id="Designer" order="3" />
-      <window_info id="UI Designer" order="4" />
-      <window_info id="Capture Tool" order="5" />
-      <window_info id="Favorites" order="6" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info active="true" anchor="bottom" id="Find" order="1" visible="true" weight="0.32891566" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.26746988" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" />
-      <window_info anchor="bottom" id="Database Changes" order="9" />
-      <window_info anchor="bottom" id="Terminal" order="10" />
-      <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
-      <window_info anchor="bottom" id="Messages" order="12" weight="0.32970297" />
-      <window_info anchor="right" id="Coverage" order="0" side_tool="true" weight="0.32960597" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="1" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="2" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
-      <window_info anchor="right" id="Palette" order="4" />
-      <window_info anchor="right" id="Database" order="5" />
-      <window_info anchor="right" id="Theme Preview" order="6" />
-      <window_info anchor="right" id="Maven" order="7" />
-      <window_info anchor="right" id="Capture Analysis" order="8" />
-      <window_info anchor="right" id="Palette&#9;" order="9" />
-    </layout>
-    <layout-to-restore>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20600858" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20600858" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -451,7 +407,7 @@
       <window_info anchor="right" id="Maven" order="7" />
       <window_info anchor="right" id="Capture Analysis" order="8" />
       <window_info anchor="right" id="Palette&#9;" order="9" />
-    </layout-to-restore>
+    </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -561,13 +517,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="945">
           <caret line="70" column="23" selection-start-line="70" selection-start-column="23" selection-end-line="70" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/worlds/test1.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="29" selection-start-line="29" selection-end-line="29" />
         </state>
       </provider>
     </entry>
@@ -685,7 +634,7 @@
     <entry file="file://$PROJECT_DIR$/shaders/fragment_tex_phong.glsl">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="300">
-          <caret line="20" column="20" selection-start-line="20" selection-start-column="8" selection-end-line="20" selection-end-column="20" />
+          <caret line="20" column="20" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="20" />
         </state>
       </provider>
     </entry>
@@ -713,16 +662,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/unsw/graphics/world/LevelIO.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="21" column="13" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/unsw/graphics/world/Camera.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1653">
@@ -736,10 +675,10 @@
     <entry file="file://$PROJECT_DIR$/res/textures/grass.bmp">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/unsw/graphics/world/World.java">
+    <entry file="file://$PROJECT_DIR$/src/unsw/graphics/world/LevelIO.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1125">
-          <caret line="77" lean-forward="true" selection-start-line="77" selection-end-line="77" />
+        <state relative-caret-position="15">
+          <caret line="21" column="13" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -748,12 +687,35 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/unsw/graphics/world/Terrain.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="533">
-          <caret line="346" column="62" lean-forward="true" selection-start-line="341" selection-start-column="10" selection-end-line="346" selection-end-column="62" />
+        <state relative-caret-position="5154">
+          <caret line="373" column="3" selection-start-line="373" selection-start-column="3" selection-end-line="383" selection-end-column="41" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#11280#11281#0" expanded="true" />
             <element signature="e#11366#11367#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/worlds/test6.json">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/worlds/test7.json">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/worlds/test1.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="29" selection-start-line="29" selection-end-line="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/unsw/graphics/world/World.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="47" column="119" selection-start-line="47" selection-start-column="119" selection-end-line="47" selection-end-column="119" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>

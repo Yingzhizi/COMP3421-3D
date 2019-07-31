@@ -72,8 +72,8 @@ public class World extends Application3D{
 	@Override
 	public void init(GL3 gl) {
 		super.init(gl);
-		Shader shader = new Shader(gl, "shaders/vertex_tex_3d.glsl",
-				"shaders/fragment_tex_3d.glsl");
+		Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl",
+				"shaders/fragment_tex_phong.glsl");
 		shader.use(gl);
 
 		// Set the lighting properties
