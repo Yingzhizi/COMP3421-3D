@@ -118,8 +118,6 @@ public class TriangleMesh {
      * the desired order for a triangle mesh). The second argument indicates
      * whether to generate face normals. If false, no normals are generated.
      * @param vertices
-     * @param indices
-     * @param vertexNormals
      */
     public TriangleMesh(List<Point3D> vertices, boolean faceNormals) {
         this.vertices = new Point3DBuffer(vertices);

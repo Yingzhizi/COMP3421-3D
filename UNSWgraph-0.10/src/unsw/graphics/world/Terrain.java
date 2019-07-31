@@ -34,10 +34,6 @@ public class Terrain {
     private Vector3 sunlight;
     private TriangleMesh terrainMesh;
     private Texture texture;
-    private int verticesName;
-    private int texCoordsName;
-    private int triangleMeshName;
-    private ArrayList<Integer> triangleMashes;
 
 
 
@@ -290,20 +286,14 @@ public class Terrain {
     public void initTerrian(GL3 gl) {
         ArrayList<Point3D> allVertices = new ArrayList<>();
         ArrayList<Point2D> textureCoords = new ArrayList<>();
-        this.triangleMashes = new ArrayList<>();
+        ArrayList<Integer> triangleMashes = new ArrayList<>();
 
         // save all the point into allVertices
         for (int x = 0; x < width; x++) {
             for (int z = 0; z < width; z++) {
                 allVertices.add(new Point3D((float)x, (float)getGridAltitude(x, z), (float)z));
                 // add current vertex to texture array
-                if (x % 3 == 0) {
-                    textureCoords.add(x, new Point2D(0, 0));
-                } else if (x % 3 == 1) {
-                    textureCoords.add(x, new Point2D(1, 0));
-                } else if (x % 3 == 2) {
-                    textureCoords.add(x, new Point2D(0.5f, 1));
-                }
+                textureCoords.add(x, new Point2D((float)x, (float)z));
             }
         }
 
@@ -341,27 +331,7 @@ public class Terrain {
         }
 
         // create new triangleMesh for terrian
-        terrainMesh = new TriangleMesh(allVertices, triangleMashes, true);
-
-//        int[] names = new int[3];
-//        gl.glGenBuffers(3, names, 0);
-//
-//        verticesName = names[0];
-//        texCoordsName = names[1];
-//        triangleMeshName = names[2];
-//
-//        gl.glBindBuffer(GL.GL_ARRAY_BUFFER, verticesName);
-//        gl.glBufferData(GL.GL_ARRAY_BUFFER, new Point3DBuffer(allVertices).capacity() * 3 * Float.BYTES,
-//                new Point3DBuffer(allVertices).getBuffer(), GL.GL_STATIC_DRAW);
-//
-//        gl.glBindBuffer(GL.GL_ARRAY_BUFFER, texCoordsName);
-//        gl.glBufferData(GL.GL_ARRAY_BUFFER, new Point2DBuffer(textureCoords).capacity() * 2 * Float.BYTES,
-//                new Point2DBuffer(textureCoords).getBuffer(), GL.GL_STATIC_DRAW);
-//
-//        gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, triangleMeshName);
-//        gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, GLBuffers.newDirectIntBuffer(triangleMashes.stream().mapToInt(i -> i).toArray()).capacity() * Integer.BYTES,
-//                GLBuffers.newDirectIntBuffer(triangleMashes.stream().mapToInt(i -> i).toArray()), GL.GL_STATIC_DRAW);
-
+        terrainMesh = new TriangleMesh(allVertices, triangleMashes, true, textureCoords);
         terrainMesh.init(gl);
     }
 
@@ -371,17 +341,6 @@ public class Terrain {
     }
 
     public void drawTerrain(GL3 gl, CoordFrame3D frame) {
-//        gl.glBindBuffer(GL.GL_ARRAY_BUFFER, verticesName);
-//        gl.glVertexAttribPointer(Shader.POSITION, 3, GL.GL_FLOAT, false, 0, 0);
-//
-//        gl.glBindBuffer(GL.GL_ARRAY_BUFFER, texCoordsName);
-//        gl.glVertexAttribPointer(Shader.TEX_COORD, 2, GL.GL_FLOAT, false, 0, 0);
-//
-//        gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, triangleMeshName);
-//
-//        Shader.setModelMatrix(gl, frame.getMatrix());
-//        gl.glDrawElements(GL.GL_TRIANGLES, GLBuffers.newDirectIntBuffer(triangleMashes.stream().mapToInt(i -> i).toArray()).capacity(),
-//                GL.GL_UNSIGNED_INT, 0);
 
         Shader.setInt(gl, "tex", 0);
         gl.glActiveTexture(GL.GL_TEXTURE0);
