@@ -34,7 +34,7 @@ public class World extends Application3D{
     public World(Terrain terrain) {
     	super("Assignment 2", 1000, 1000);
         this.terrain = terrain;
-        this.camera = new Camera(new Point3D(0, 0.5f, 0), this.terrain);
+        this.camera = new Camera(new Point3D(0.5f, 0.5f, 0.5f), this.terrain);
 
     }
 
@@ -45,7 +45,7 @@ public class World extends Application3D{
      * @throws FileNotFoundException
      */
     public static void main(String[] args) throws FileNotFoundException {
-        Terrain terrain = LevelIO.load(new File("/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test1.json"));
+        Terrain terrain = LevelIO.load(new File(args[0]));//"/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test1.json"));
         World world = new World(terrain);
         world.start();
     }
@@ -59,6 +59,7 @@ public class World extends Application3D{
 
 		// change with camera
 		CoordFrame3D frame = camera.resetFrame();
+		Shader.setViewMatrix(gl, frame.getMatrix());
 		terrain.draw(gl, frame);
 
 	}
