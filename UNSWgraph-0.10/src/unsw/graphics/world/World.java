@@ -30,6 +30,7 @@ public class World extends Application3D{
 	private static final int ROTATION_SCALE = 1;
 	private float rotateX = 0;
 	private float rotateY = 0;
+	private Point3D sunPos;
 
     public World(Terrain terrain) {
     	super("Assignment 2", 1000, 1000);
@@ -73,15 +74,18 @@ public class World extends Application3D{
 	@Override
 	public void init(GL3 gl) {
 		super.init(gl);
+		
+		sunPos = this.terrain.getSunlight().asPoint3D();
+		
 		Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl",
 				"shaders/fragment_tex_phong.glsl");
 		shader.use(gl);
 
 		// Set the lighting properties
-		Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
+		Shader.setPoint3D(gl, "lightPos", sunPos);
 		Shader.setColor(gl, "lightIntensity", Color.WHITE);
 		Shader.setColor(gl, "sunlightIntensity", Color.WHITE);
-		Shader.setColor(gl, "ambientIntensity", new Color(0.5f, 0.5f, 0.5f));
+		Shader.setColor(gl, "ambientIntensity", new Color(0.3f, 0.3f, 0.3f));
 
 		// Set the material properties
 		Shader.setColor(gl, "ambientCoeff", Color.WHITE);

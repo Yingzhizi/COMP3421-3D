@@ -8,6 +8,7 @@ import com.jogamp.opengl.GL3;
 
 import unsw.graphics.CoordFrame3D;
 import unsw.graphics.Matrix4;
+import unsw.graphics.Texture;
 import unsw.graphics.Vector3;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
@@ -25,6 +26,7 @@ public class Road {
 	private TriangleMesh roadMesh;
     private List<Point2D> points;
     private float width;
+    private Texture texture;
     
     /**
      * Create a new road with the specified spine 
@@ -132,7 +134,7 @@ public class Road {
     	float roadAlt = getRoadAltitude();
     	
     	//create the vertices
-    	for(float slice = 0f; slice <= this.size(); slice++) {
+    	for(float slice = 0f; slice < this.size(); slice++) {
     		//get where the point is on the road
     		//thanks rob for function to determine the point
     		Point2D firstPt = point(slice);
@@ -187,7 +189,12 @@ public class Road {
     	return terrain.altitude(x, y);
     }
     
+    public void loadTexture(GL3 gl) {
+    	this.texture = new Texture(gl, "res/textures/rock.bmp", "bmp", true);
+    }
+    
     public void draw(GL3 gl, CoordFrame3D frame) {
+    	loadTexture(gl);
     	roadMesh.draw(gl, frame);
     }
 

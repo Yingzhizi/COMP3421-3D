@@ -211,6 +211,7 @@ public class Terrain {
             tree.display(gl, frame);
         }
     }
+    
     /**
      * Add a road.
      *
@@ -220,6 +221,21 @@ public class Terrain {
         roads.add(road);
     }
 
+    public void initRoad(GL3 gl) {
+        for (Road road : roads) {
+            road.init(gl);
+        }
+    }
+    
+    public void drawRoad(GL3 gl, CoordFrame3D frame) {
+        initRoad(gl);
+        // set shader color
+        Shader.setPenColor(gl, Color.WHITE);
+        for (Road road : roads) {
+            road.init(gl);
+            road.draw(gl, frame);
+        }
+    }
 
     public void initTerrian(GL3 gl) {
         ArrayList<Point3D> allVertices = new ArrayList<>();
@@ -275,7 +291,7 @@ public class Terrain {
 
     // add texture to terrain
     public void loadTexture(GL3 gl) {
-        this.texture = new Texture(gl, "res/textures/grass.bmp", "bmp", false);
+        this.texture = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
     }
 
     public void drawTerrain(GL3 gl, CoordFrame3D frame) {
@@ -300,6 +316,8 @@ public class Terrain {
     public void draw(GL3 gl, CoordFrame3D frame) {
         drawTerrain(gl, frame);
         drawTree(gl, frame);
+        drawRoad(gl, frame);
+        
     }
 
 }
