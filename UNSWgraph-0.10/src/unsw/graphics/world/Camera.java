@@ -103,11 +103,11 @@ public class Camera implements KeyListener {
 //        frame = frame.rotateY(-this.rotateY);
 //        frame = frame.translate(-1 * this.position.getX(), -1 * this.position.getY(), -1 * this.getPosition().getZ());
     	//calculate where Y axis of camera should be
-    	rotateY = myTerrain.altitude(rotateX, rotateZ) + 0.35f;
+    	rotateY = myTerrain.altitude(rotateX, rotateZ) + 0.5f;
     	System.out.println("Rotate  Y: " + rotateY + "! Rotate Z: " + rotateZ + "! rotateX: " + rotateX);
     	//place camera
     	//CoordFrame3D frame = CoordFrame3D.identity().translate(0,0,-3.5f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
-        CoordFrame3D frame = CoordFrame3D.identity().translate(0,0,-1f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
+        CoordFrame3D frame = CoordFrame3D.identity().translate(0,0,-1.1f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
     	
     	return frame;
     }
