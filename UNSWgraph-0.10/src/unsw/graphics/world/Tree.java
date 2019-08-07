@@ -1,12 +1,15 @@
 package unsw.graphics.world;
 
+import com.jogamp.opengl.GL;
 import unsw.graphics.CoordFrame3D;
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
 
 import com.jogamp.opengl.GL3;
+import unsw.graphics.*;
 
-import java.io.IOException;
+import java.awt.*;
+
 
 /**
  * COMMENT: Comment Tree 
@@ -17,6 +20,7 @@ public class Tree {
 
     private Point3D position;
     private TriangleMesh treeMesh;
+    private Texture treeTexture;
     
     public Tree(float x, float y, float z) {
         position = new Point3D(x, y, z);
@@ -27,10 +31,11 @@ public class Tree {
     }
 
     //initiate tree, create triangleMesh from ply file
-    public void initTree(GL3 gl) {
+    public void initTree(GL3 gl, Texture tex) {
         try {
             treeMesh = new TriangleMesh("res/models/tree.ply", true, true);
             treeMesh.init(gl);
+            this.treeTexture = tex;
         } catch (Exception e) {
             System.out.println("Something is wrong");
         }

@@ -114,8 +114,6 @@ public class Texture {
     /**
      * Create a texture with NO associated buffer.
      * @param gl
-     * @param buffer
-     * @param size
      */
     public Texture(GL3 gl) {
         mipMapEnabled = false;
@@ -133,7 +131,6 @@ public class Texture {
     /**
      * Create a cube map texture from a multiple files.
      * @param gl
-     * @param fileName
      * @param extension
      * @param mipmaps
      */
