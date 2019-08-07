@@ -169,35 +169,38 @@ public class Terrain {
         // | /       |
         // |----------
 
-        System.out.println("leftX: "+ leftX);
-        System.out.println("rightX: "+ rightX);
-        System.out.println("bottomZ: "+ bottomZ);
-        System.out.println("topZ: "+ topZ);
+//        System.out.println("leftX: "+ leftX);
+//        System.out.println("rightX: "+ rightX);
+//        System.out.println("bottomZ: "+ bottomZ);
+//        System.out.println("topZ: "+ topZ);
         float hypotenuse = z - bottomZ + leftX;
-        System.out.println("hypotenuse is something: "+ hypotenuse + "! x is: " + x + " ! And z is: " + z);
+//        System.out.println("hypotenuse is something: "+ hypotenuse + "! x is: " + x + " ! And z is: " + z);
         if((int)x == x && (int)z == z) {
             altitude =  (float)getGridAltitude((int)x, (int)z);
-            System.out.println("int: "+ altitude);
+//            System.out.println("int: "+ altitude);
         } else if ((int)x != x && (int)z == z) {
             altitude =  linearInterPolateX(x, leftX, rightX, z, z);
-            System.out.println("intz: "+ altitude);
+//            System.out.println("intz: "+ altitude);
         } else if ((int)x == x && (int)z != z) {
             altitude = linearInterPolateZ(z, bottomZ, topZ, x, x);
-            System.out.println("intz: "+ altitude);
+//            System.out.println("intz: "+ altitude);
         } else {
             if(x < hypotenuse) {
                 float lipz1 = linearInterPolateZ(z, bottomZ, topZ, leftX, leftX);
                 float lipz2 = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
                 altitude = bilinearInterpolate(x, (float)leftX, hypotenuse, lipz1, lipz2);
-                System.out.println("above: "+ altitude);
+                System.out.println("above: ");
+//                System.out.println("above: "+ altitude);
             } else if (x > hypotenuse){
                 float lipz1 = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
                 float lipz2 = linearInterPolateZ(z, bottomZ, topZ, rightX, rightX);
                 altitude = bilinearInterpolate(x, hypotenuse, (float)rightX, lipz1, lipz2);
-                System.out.println("below: "+ altitude);
+                System.out.println("below: ");
+//                System.out.println("below: "+ altitude);
             } else {
                 altitude = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
-                System.out.println("hypotenuse: "+ altitude);
+                System.out.println("hypotenuse:");
+//                System.out.println("hypotenuse: "+ altitude);
 
             }
         }
@@ -252,16 +255,30 @@ public class Terrain {
             tree.display(gl, frame);
         }
     }
-
     /**
      * Add a road.
      *
      */
     public void addRoad(float width, List<Point2D> spine) {
-        Road road = new Road(width, spine);
+        Road road = new Road(width, spine, this);
         roads.add(road);
     }
 
+    public void initRoad(GL3 gl) {
+        for (Road road : roads) {
+            road.init(gl);
+        }
+    }
+    
+    public void drawRoad(GL3 gl, CoordFrame3D frame) {
+        initRoad(gl);
+        // set shader color
+        Shader.setPenColor(gl, Color.WHITE);
+        for (Road road : roads) {
+            road.init(gl);
+            road.draw(gl, frame);
+        }
+    }
 
     public void initTerrian(GL3 gl) {
         ArrayList<Point3D> allVertices = new ArrayList<>();
@@ -340,6 +357,8 @@ public class Terrain {
     public void draw(GL3 gl, CoordFrame3D frame) {
         drawTerrain(gl, frame);
         drawTree(gl, frame);
+        drawRoad(gl, frame);
+        
     }
 
 }

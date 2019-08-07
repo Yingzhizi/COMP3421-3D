@@ -49,34 +49,6 @@ public class Camera implements KeyListener {
         //should of checked to see if we were in terrain but ran out of time
         //will implement in final milestone
         if(keyCode == KeyEvent.VK_UP) {
-//<<<<<<< HEAD
-//            this.currentSpeend = -runSpeed;
-//            this.currentTurnSpeed = 0;
-//            //move();
-//            System.out.println("I press up");
-//        }
-//        if(keyCode == KeyEvent.VK_DOWN) {
-//            this.currentSpeend = runSpeed;
-//            this.currentTurnSpeed = 0;
-//            //move();
-//            System.out.println("I press down");
-//        }
-//
-//        if(keyCode == KeyEvent.VK_LEFT) {
-//            this.currentTurnSpeed = turnSpeed;
-//            this.currentSpeend = 0;
-//            //move();
-//            System.out.println("I press left");
-//        }
-//        if(keyCode == KeyEvent.VK_RIGHT) {
-//            this.currentTurnSpeed = -turnSpeed;
-//            this.currentSpeend = 0;
-//            //move();
-//            System.out.println("I press right");
-//        }
-//
-//        move();
-//=======
         	//moves forwards
         	rotateX -= runSpeed * Math.sin(Math.toRadians(rotate));
         	rotateZ -= runSpeed * Math.cos(Math.toRadians(rotate));
@@ -87,9 +59,7 @@ public class Camera implements KeyListener {
         	rotateX += runSpeed * Math.sin(Math.toRadians(rotate));
         	rotateZ += runSpeed * Math.cos(Math.toRadians(rotate));
             System.out.println("I press down");
-        } //else {
-        //    this.currentSpeend = 0;
-        //}
+        }
 
         else if(keyCode == KeyEvent.VK_LEFT) {
         	//moves left
@@ -106,28 +76,7 @@ public class Camera implements KeyListener {
     public void keyReleased(KeyEvent e) {
 
     }
-//    public void moveForward() {
-//        this.currentSpeend = -runSpeed;
-//        float distance = this.currentSpeend * 1;
-//        float x = -1 * distance * (float)Math.sin(-1 * Math.toRadians(this.rotateY));
-//        float z = distance * (float)Math.cos(-1 * Math.toRadians(this.rotateY));
-//        // get y position
-//        float y = myTerrain.altitude(x, z);
-//
-//        // calculate the increment/decrement in y axis
-//        y = y - position.getY() + 0.5f;
-//
-//        // update the camera position
-//        this.position = this.position.translate(x, y, z);
-//
-//        // test
-//        System.out.println("x: " + this.position.getX() + "y: " + this.position.getY() + "z: " + this.position.getZ());
-//    }
-//
-//    public void moveBackward() {
-//        this.currentSpeend = runSpeed;
-//    }
-    // camera will move with key press
+
     public void move() {
         // for testing, cannot do continuous
         this.rotateY = this.rotateY + this.currentTurnSpeed * 1;
@@ -158,6 +107,7 @@ public class Camera implements KeyListener {
 //        frame = frame.translate(-1 * this.position.getX(), -1 * this.position.getY(), -1 * this.getPosition().getZ());
     	//calculate where Y axis of camera should be
     	rotateY = myTerrain.altitude(rotateX, rotateZ) + 0.35f;
+    	System.out.println("Rotate  Y: " + rotateY + "! Rotate Z: " + rotateZ + "! rotateX: " + rotateX);
     	//place camera
     	CoordFrame3D frame = CoordFrame3D.identity().translate(0,0,-3.5f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
     	
