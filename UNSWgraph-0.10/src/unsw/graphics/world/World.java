@@ -34,7 +34,7 @@ public class World extends Application3D{
     public World(Terrain terrain) {
     	super("Assignment 2", 1000, 1000);
         this.terrain = terrain;
-        this.camera = new Camera(new Point3D(0f, 0.5f, -1.1f), this.terrain);
+        this.camera = new Camera(new Point3D(0f, 0.5f, -1.1f), terrain, terrain.getAvatar());
 
     }
 

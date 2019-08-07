@@ -1,12 +1,9 @@
 package unsw.graphics.world;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import com.jogamp.opengl.util.GLBuffers;
 import unsw.graphics.Vector3;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
@@ -35,6 +32,8 @@ public class Terrain {
     private TriangleMesh terrainMesh;
     private Texture texture;
     private Texture treeTexture;
+    private Texture avatarTexture;
+    private Avatar avatar;
 
 
 
@@ -169,39 +168,27 @@ public class Terrain {
         // | /       |
         // |----------
 
-//        System.out.println("leftX: "+ leftX);
-//        System.out.println("rightX: "+ rightX);
-//        System.out.println("bottomZ: "+ bottomZ);
-//        System.out.println("topZ: "+ topZ);
         float hypotenuse = z - bottomZ + leftX;
-//        System.out.println("hypotenuse is something: "+ hypotenuse + "! x is: " + x + " ! And z is: " + z);
         if((int)x == x && (int)z == z) {
             altitude =  (float)getGridAltitude((int)x, (int)z);
-//            System.out.println("int: "+ altitude);
         } else if ((int)x != x && (int)z == z) {
             altitude =  linearInterPolateX(x, leftX, rightX, z, z);
-//            System.out.println("intz: "+ altitude);
         } else if ((int)x == x && (int)z != z) {
             altitude = linearInterPolateZ(z, bottomZ, topZ, x, x);
-//            System.out.println("intz: "+ altitude);
         } else {
             if(x < hypotenuse) {
                 float lipz1 = linearInterPolateZ(z, bottomZ, topZ, leftX, leftX);
                 float lipz2 = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
                 altitude = bilinearInterpolate(x, (float)leftX, hypotenuse, lipz1, lipz2);
                 System.out.println("above: ");
-//                System.out.println("above: "+ altitude);
             } else if (x > hypotenuse){
                 float lipz1 = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
                 float lipz2 = linearInterPolateZ(z, bottomZ, topZ, rightX, rightX);
                 altitude = bilinearInterpolate(x, hypotenuse, (float)rightX, lipz1, lipz2);
                 System.out.println("below: ");
-//                System.out.println("below: "+ altitude);
             } else {
                 altitude = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
                 System.out.println("hypotenuse:");
-//                System.out.println("hypotenuse: "+ altitude);
-
             }
         }
         return altitude;
@@ -336,6 +323,7 @@ public class Terrain {
     public void loadTexture(GL3 gl) {
         this.texture = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
         this.treeTexture = new Texture(gl, "res/textures/tree.png", "png", true);
+        this.avatarTexture = new Texture(gl, "res/textures/BrightPurpleMarble.png", "png", true);
     }
 
     public void drawTerrain(GL3 gl, CoordFrame3D frame) {
@@ -348,6 +336,21 @@ public class Terrain {
 
     }
 
+    public void initAvatar(GL3 gl) {
+        this.avatar = new Avatar(avatarTexture, new Point3D(1, (float)this.getGridAltitude(1, 1), 1), 0, 0, 0);
+        this.avatar.init(gl, this.avatarTexture);
+
+    }
+
+    public void drawAvatar(GL3 gl, CoordFrame3D frame) {
+        initAvatar(gl);
+        Shader.setInt(gl, "tex", 0);
+        gl.glActiveTexture(GL.GL_TEXTURE0);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, this.avatarTexture.getId());
+        Shader.setPenColor(gl, Color.WHITE);
+        this.avatar.display(gl, frame);
+
+    }
     public void init(GL3 gl) {
         initTerrian(gl);
         // load texture of terrain
@@ -358,7 +361,12 @@ public class Terrain {
         drawTerrain(gl, frame);
         drawTree(gl, frame);
         drawRoad(gl, frame);
+        drawAvatar(gl, frame);
         
+    }
+
+    public Avatar getAvatar() {
+        return this.avatar;
     }
 
 }
