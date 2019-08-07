@@ -2,15 +2,9 @@ package unsw.graphics.world;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
-import com.jogamp.opengl.GL3;
 
 import unsw.graphics.CoordFrame3D;
-import unsw.graphics.Shader;
-import unsw.graphics.Vector3;
 import unsw.graphics.geometry.Point3D;
-import unsw.graphics.Matrix4;
-
-import unsw.graphics.geometry.Point2D;
 
 
 public class Camera implements KeyListener {
@@ -19,8 +13,8 @@ public class Camera implements KeyListener {
 
     // the speed of the camera run
     private static final float runSpeed = 0.1f;
-    private static final float turnSpeed = 0.75f;
-    private float rotate = -75f;
+    private static final float turnSpeed = 1.5f;
+    private float rotate = -75;
 
     private float currentSpeend = 0;
     private float currentTurnSpeed = 0;
@@ -50,8 +44,11 @@ public class Camera implements KeyListener {
         //will implement in final milestone
         if(keyCode == KeyEvent.VK_UP) {
         	//moves forwards
-        	rotateX -= runSpeed * Math.sin(Math.toRadians(rotate));
-        	rotateZ -= runSpeed * Math.cos(Math.toRadians(rotate));
+            //change in x and z
+
+                rotateX -= runSpeed * Math.sin(Math.toRadians(rotate));
+                rotateZ -= runSpeed * Math.cos(Math.toRadians(rotate));
+//            System.out.println("oldY is "+ oldY + "! newY is " + newY);
             System.out.println("I press up");
         } else if(keyCode == KeyEvent.VK_DOWN) {
             //this.currentSpeend = runSpeed;
@@ -109,7 +106,8 @@ public class Camera implements KeyListener {
     	rotateY = myTerrain.altitude(rotateX, rotateZ) + 0.35f;
     	System.out.println("Rotate  Y: " + rotateY + "! Rotate Z: " + rotateZ + "! rotateX: " + rotateX);
     	//place camera
-    	CoordFrame3D frame = CoordFrame3D.identity().translate(0,0,-3.5f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
+    	//CoordFrame3D frame = CoordFrame3D.identity().translate(0,0,-3.5f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
+        CoordFrame3D frame = CoordFrame3D.identity().translate(0,0,-1f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
     	
     	return frame;
     }
