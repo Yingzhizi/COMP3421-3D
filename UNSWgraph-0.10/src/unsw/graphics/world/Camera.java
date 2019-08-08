@@ -2,6 +2,7 @@ package unsw.graphics.world;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
+import com.jogamp.opengl.GL3;
 
 import unsw.graphics.CoordFrame3D;
 import unsw.graphics.geometry.Point3D;
@@ -64,24 +65,24 @@ public class Camera implements KeyListener {
             rotateX -= runSpeed * Math.sin(Math.toRadians(rotate));
             rotateZ -= runSpeed * Math.cos(Math.toRadians(rotate));
             this.position = new Point3D(rotateX, myTerrain.altitude(rotateX, rotateZ), rotateZ);
-            System.out.println("I press up");
+            //System.out.println("I press up");
         } else if(keyCode == KeyEvent.VK_DOWN) {
         	//moves backwards
         	rotateX += runSpeed * Math.sin(Math.toRadians(rotate));
         	rotateZ += runSpeed * Math.cos(Math.toRadians(rotate));
             this.position = new Point3D(rotateX, myTerrain.altitude(rotateX, rotateZ), rotateZ);
-            System.out.println("I press down");
+            //System.out.println("I press down");
         }
 
         // when turn left or right, camera's position stay the same
         else if(keyCode == KeyEvent.VK_LEFT) {
         	//moves left
         	rotate += turnSpeed;
-            System.out.println("I press left");
+//            System.out.println("I press left");
         } else if(keyCode == KeyEvent.VK_RIGHT) {
         	//moves right
         	rotate -= turnSpeed;
-            System.out.println("I press right");
+//            System.out.println("I press right");
         }
 
         switchView(e);
@@ -95,18 +96,19 @@ public class Camera implements KeyListener {
 
     public CoordFrame3D resetFrame() {
         // update new cameraPosition
-    	//calculate where Y axis of camera should be
-    	rotateY = myTerrain.altitude(rotateX, rotateZ) + 0.5f;
-
+    	// calculate where Y axis of camera should be
     	// reset the position of avatar, also the rotation
     	// place camera
         CoordFrame3D frame = CoordFrame3D.identity();
         if (thirdPerson == false) {
             // place the camera position to avatar's position
-            frame = frame.translate(-0.2f,0f,-1.1f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
+            rotateY = myTerrain.altitude(rotateX, rotateZ + 0.5f) + 0.7f;
+            frame = frame.translate(0f,0f,-0.8f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
         } else {
+            rotateY = myTerrain.altitude(rotateX, rotateZ) + 0.5f;
             frame = frame.translate(0f,0f,-1.1f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
         }
+    	//System.out.println("Rotate  Y: " + rotateY + "! Rotate Z: " + rotateZ + "! rotateX: " + rotateX);
     	return frame;
     }
 

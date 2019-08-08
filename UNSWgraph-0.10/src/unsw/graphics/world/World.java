@@ -3,6 +3,8 @@ package unsw.graphics.world;
 import java.awt.Color;
 import com.jogamp.newt.event.KeyAdapter;
 import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.KeyListener;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,6 +16,7 @@ import unsw.graphics.Application3D;
 import unsw.graphics.CoordFrame3D;
 import unsw.graphics.Matrix4;
 import unsw.graphics.Shader;
+import unsw.graphics.Texture;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
 
@@ -22,24 +25,27 @@ import unsw.graphics.geometry.Point3D;
  *
  * @author malcolmr
  */
-public class World extends Application3D{
+public class World extends Application3D implements KeyListener{
 
     private Terrain terrain;
     private Camera camera;
     private Avatar avatar;
-    private boolean thirdPlayer;
+    
+    //day time and night time mode
+    private boolean night;
 
 	private Point2D myMousePoint = null;
 	private static final int ROTATION_SCALE = 1;
 	private float rotateX = 0;
 	private float rotateY = 0;
+	private Point3D sunPos;
 
     public World(Terrain terrain) {
     	super("Assignment 2", 1000, 1000);
         this.terrain = terrain;
 		this.avatar = new Avatar(new Point3D(1, (float)terrain.getGridAltitude(1, 1), 1), 0, 0, 0);
         this.camera = new Camera(new Point3D(0f, 0f, 0f), terrain);
-
+        this.night = false;
     }
 
     /**
@@ -49,7 +55,7 @@ public class World extends Application3D{
      * @throws FileNotFoundException
      */
     public static void main(String[] args) throws FileNotFoundException {
-        Terrain terrain = LevelIO.load(new File("/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test1.json"));
+        Terrain terrain = LevelIO.load(new File("/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test1.json"));//"/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test4.json"));
         World world = new World(terrain);
         world.start();
     }
@@ -69,6 +75,10 @@ public class World extends Application3D{
 		avatar.setPosition(camera.getNewPos());
 		avatar.increaseRotation(0, camera.getRotate(),0);
 		System.out.println("new x:" + avatar.getPosition().getX() + ";" + "new y: " + avatar.getPosition().getY() + "; new z" + avatar.getPosition().getZ());
+//		Shader.setViewMatrix(gl, camera.getMatrix());
+		if(night) {
+			
+		}
 		terrain.draw(gl, frame);
 		avatar.display(gl, avatarFame);
 	}
@@ -82,15 +92,17 @@ public class World extends Application3D{
 	public void init(GL3 gl) {
 		super.init(gl);
 		getWindow().addKeyListener(this.camera);
+		getWindow().addKeyListener(this);
+		sunPos = this.terrain.getSunlight().asPoint3D();
 		Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl",
 				"shaders/fragment_tex_phong.glsl");
 		shader.use(gl);
 
 		// Set the lighting properties
-		Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
+		Shader.setPoint3D(gl, "lightPos", sunPos);
 		Shader.setColor(gl, "lightIntensity", Color.WHITE);
 		Shader.setColor(gl, "sunlightIntensity", Color.WHITE);
-		Shader.setColor(gl, "ambientIntensity", new Color(0.5f, 0.5f, 0.5f));
+		Shader.setColor(gl, "ambientIntensity", new Color(0.3f, 0.3f, 0.3f));
 
 		// Set the material properties
 		Shader.setColor(gl, "ambientCoeff", Color.WHITE);
@@ -102,6 +114,7 @@ public class World extends Application3D{
 
 		terrain.init(gl);
 		avatar.init(gl);
+
 	}
 
 	@Override
@@ -130,4 +143,26 @@ public class World extends Application3D{
 //	public void keyReleased(KeyEvent keyEvent) {
 //
 //	}
+	@Override
+	public void keyPressed(KeyEvent e) {
+		int keyCode = e.getKeyCode();
+		if(keyCode == KeyEvent.VK_N) {
+			//System.out.println("NIGHT TIME LOSER");
+			//make night time boolean the opposite
+			this.night = this.night == true ? false : true;
+			if(night) {
+				//specular
+			} else {
+				
+			}
+		}
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
