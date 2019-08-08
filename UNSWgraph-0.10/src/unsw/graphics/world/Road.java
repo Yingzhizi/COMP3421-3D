@@ -142,7 +142,7 @@ public class Road {
     		Point2D secondPt = point(slice + 0.004f);
     		//calculate the normal at the secondPoint
     		Vector3 norm = new Vector3(secondPt.getX() - firstPt.getX(), 0, secondPt.getY() - firstPt.getY()).normalize();
-    		Vector3 i = new Vector3(norm.getZ(), 0, -1 * norm.getX());
+    		Vector3 i = new Vector3(-1 * norm.getZ(), 0, norm.getX());
     		Vector3 j = norm.cross(i);
     		Vector3 phi = new Vector3(firstPt.getX(), roadAlt, firstPt.getY());
     		

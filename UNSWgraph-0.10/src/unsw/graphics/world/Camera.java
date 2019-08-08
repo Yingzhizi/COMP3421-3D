@@ -66,13 +66,13 @@ public class Camera implements KeyListener {
             rotateX -= runSpeed * Math.sin(Math.toRadians(rotate));
             rotateZ -= runSpeed * Math.cos(Math.toRadians(rotate));
             this.position = new Point3D(rotateX, myTerrain.altitude(rotateX, rotateZ), rotateZ);
-            System.out.println("I press up");
+            //System.out.println("I press up");
         } else if(keyCode == KeyEvent.VK_DOWN) {
         	//moves backwards
         	rotateX += runSpeed * Math.sin(Math.toRadians(rotate));
         	rotateZ += runSpeed * Math.cos(Math.toRadians(rotate));
             this.position = new Point3D(rotateX, myTerrain.altitude(rotateX, rotateZ), rotateZ);
-            System.out.println("I press down");
+            //System.out.println("I press down");
         }
 
         // when turn left or right, camera's position stay the same
@@ -97,7 +97,7 @@ public class Camera implements KeyListener {
         // update new cameraPosition
     	//calculate where Y axis of camera should be
     	rotateY = myTerrain.altitude(rotateX, rotateZ) + 0.5f;
-    	System.out.println("Rotate  Y: " + rotateY + "! Rotate Z: " + rotateZ + "! rotateX: " + rotateX);
+    	//System.out.println("Rotate  Y: " + rotateY + "! Rotate Z: " + rotateZ + "! rotateX: " + rotateX);
     	//place camera
         CoordFrame3D frame = CoordFrame3D.identity().translate(0,0,-1.1f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
     	return frame;
