@@ -13,6 +13,7 @@ import unsw.graphics.Application3D;
 import unsw.graphics.CoordFrame3D;
 import unsw.graphics.Matrix4;
 import unsw.graphics.Shader;
+import unsw.graphics.Texture;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
 
@@ -25,6 +26,7 @@ public class World extends Application3D{
 
     private Terrain terrain;
     private Camera camera;
+    private Texture roadTex;
 
 	private Point2D myMousePoint = null;
 	private static final int ROTATION_SCALE = 1;
@@ -45,7 +47,7 @@ public class World extends Application3D{
      * @throws FileNotFoundException
      */
     public static void main(String[] args) throws FileNotFoundException {
-        Terrain terrain = LevelIO.load(new File("/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test4.json"));
+        Terrain terrain = LevelIO.load(new File(args[0]));//"/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test4.json"));
         World world = new World(terrain);
         world.start();
     }
@@ -58,8 +60,8 @@ public class World extends Application3D{
 		//CoordFrame3D frame = CoordFrame3D.identity().translate(0, 0, -2.4f).scale(0.3f, 0.3f, 0.3f).rotateX(rotateX).rotateY(rotateY);
 
 		// change with camera
-		CoordFrame3D frame = camera.resetFrame();
-		//Shader.setViewMatrix(gl, frame.getMatrix());
+		CoordFrame3D frame = camera.resetFrame(gl);
+//		Shader.setViewMatrix(gl, camera.getMatrix());
 
 		terrain.draw(gl, frame);
 
@@ -73,6 +75,8 @@ public class World extends Application3D{
 	@Override
 	public void init(GL3 gl) {
 		super.init(gl);
+		
+		roadTex = new Texture(gl, "res/textures/rock.bmp", "bmp", true);
 		Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl",
 				"shaders/fragment_tex_phong.glsl");
 		shader.use(gl);

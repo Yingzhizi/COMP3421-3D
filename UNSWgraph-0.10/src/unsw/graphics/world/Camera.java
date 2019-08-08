@@ -18,9 +18,9 @@ public class Camera implements KeyListener {
     private Point3D position;
 
     // the speed of the camera run
-    private static final float runSpeed = 0.1f;
-    private static final float turnSpeed = 0.75f;
-    private float rotate = -75f;
+    private static final float runSpeed = 0.05f;
+    private static final float turnSpeed = 0.3f;
+    private float rotate = -90f;
 
     private float currentSpeend = 0;
     private float currentTurnSpeed = 0;
@@ -52,23 +52,23 @@ public class Camera implements KeyListener {
         	//moves forwards
         	rotateX -= runSpeed * Math.sin(Math.toRadians(rotate));
         	rotateZ -= runSpeed * Math.cos(Math.toRadians(rotate));
-            System.out.println("I press up");
+//            System.out.println("I press up");
         } else if(keyCode == KeyEvent.VK_DOWN) {
             //this.currentSpeend = runSpeed;
         	//moves backwards
         	rotateX += runSpeed * Math.sin(Math.toRadians(rotate));
         	rotateZ += runSpeed * Math.cos(Math.toRadians(rotate));
-            System.out.println("I press down");
+//            System.out.println("I press down");
         }
 
         else if(keyCode == KeyEvent.VK_LEFT) {
         	//moves left
         	rotate += turnSpeed;
-            System.out.println("I press left");
+//            System.out.println("I press left");
         } else if(keyCode == KeyEvent.VK_RIGHT) {
         	//moves right
         	rotate -= turnSpeed;
-            System.out.println("I press right");
+//            System.out.println("I press right");
         }
     }
 
@@ -100,17 +100,17 @@ public class Camera implements KeyListener {
 
     }
 
-    public CoordFrame3D resetFrame() {
+    public CoordFrame3D resetFrame(GL3 gl) {
         // update new cameraPosition
 //        CoordFrame3D frame = CoordFrame3D.identity().translate(0, 0, -2.4f).scale(0.3f, 0.3f, 0.3f);
 //        frame = frame.rotateY(-this.rotateY);
 //        frame = frame.translate(-1 * this.position.getX(), -1 * this.position.getY(), -1 * this.getPosition().getZ());
     	//calculate where Y axis of camera should be
-    	rotateY = myTerrain.altitude(rotateX, rotateZ) + 0.35f;
-    	System.out.println("Rotate  Y: " + rotateY + "! Rotate Z: " + rotateZ + "! rotateX: " + rotateX);
+    	rotateY = myTerrain.altitude(rotateX, rotateZ) + 0.15f;
+    	System.out.println("RotateX = : " + rotateX + "! RotateZ = " + rotateZ);
+//    	System.out.println("Rotate  Y: " + rotateY + "! Rotate Z: " + rotateZ + "! rotateX: " + rotateX);
     	//place camera
-    	CoordFrame3D frame = CoordFrame3D.identity().translate(0,0,-3.5f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
-    	
+    	CoordFrame3D frame = CoordFrame3D.identity().translate(0,0,-4f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
     	return frame;
     }
 

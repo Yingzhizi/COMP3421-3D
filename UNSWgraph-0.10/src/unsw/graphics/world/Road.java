@@ -189,13 +189,13 @@ public class Road {
     	return terrain.altitude(x, y);
     }
     
-    public void loadTexture(GL3 gl) {
-    	this.texture = new Texture(gl, "res/textures/rock.bmp", "bmp", true);
-    }
+//    public void loadTexture(GL3 gl) {
+//    	this.texture = new Texture(gl, "res/textures/rock.bmp", "bmp", true);
+//    }
     
     public void draw(GL3 gl, CoordFrame3D frame) {
-    	loadTexture(gl);
-    	roadMesh.draw(gl, frame);
+    	CoordFrame3D roadF = frame;
+    	roadMesh.draw(gl, roadF);
     }
 
 

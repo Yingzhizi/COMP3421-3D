@@ -177,25 +177,28 @@ public class Terrain {
 //        System.out.println("hypotenuse is something: "+ hypotenuse + "! x is: " + x + " ! And z is: " + z);
         if((int)x == x && (int)z == z) {
             altitude =  (float)getGridAltitude((int)x, (int)z);
+//            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAA");
 //            System.out.println("int: "+ altitude);
         } else if ((int)x != x && (int)z == z) {
             altitude =  linearInterPolateX(x, leftX, rightX, z, z);
 //            System.out.println("intz: "+ altitude);
         } else if ((int)x == x && (int)z != z) {
             altitude = linearInterPolateZ(z, bottomZ, topZ, x, x);
+//            System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBB");
+
 //            System.out.println("intz: "+ altitude);
         } else {
             if(x < hypotenuse) {
                 float lipz1 = linearInterPolateZ(z, bottomZ, topZ, leftX, leftX);
                 float lipz2 = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
                 altitude = bilinearInterpolate(x, (float)leftX, hypotenuse, lipz1, lipz2);
-                System.out.println("above: ");
+                //System.out.println("above: ");
 //                System.out.println("above: "+ altitude);
             } else if (x > hypotenuse){
                 float lipz1 = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
                 float lipz2 = linearInterPolateZ(z, bottomZ, topZ, rightX, rightX);
                 altitude = bilinearInterpolate(x, hypotenuse, (float)rightX, lipz1, lipz2);
-                System.out.println("below: ");
+                //System.out.println("below: ");
 //                System.out.println("below: "+ altitude);
             } else {
                 altitude = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
