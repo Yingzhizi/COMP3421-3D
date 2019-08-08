@@ -121,7 +121,7 @@ public class Road {
         throw new IllegalArgumentException("" + i);
     }
     
-    public void init(GL3 gl) {
+    public void init(GL3 gl, Texture texture) {
     	List<Point2D> texCoords = new ArrayList<Point2D>();
     	List<Integer> indices = new ArrayList<>();
     	List<Point3D> vertices = new ArrayList<>();
@@ -173,6 +173,7 @@ public class Road {
     	}
     	roadMesh = new TriangleMesh(vertices, normals, indices, texCoords);
     	roadMesh.init(gl);
+    	this.texture = texture;
     }
     
     //use to calculate the values of the frenet frame to draw the bezier curve
@@ -188,13 +189,9 @@ public class Road {
     	float y = points.get(0).getY();
     	return terrain.altitude(x, y);
     }
-    
-    public void loadTexture(GL3 gl) {
-    	this.texture = new Texture(gl, "res/textures/rock.bmp", "bmp", true);
-    }
+
     
     public void draw(GL3 gl, CoordFrame3D frame) {
-    	loadTexture(gl);
     	roadMesh.draw(gl, frame);
     }
 

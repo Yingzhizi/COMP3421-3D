@@ -19,11 +19,11 @@ public class Camera implements KeyListener {
     private float pitch;
     private float yaw;
     private float roll;
-    private float rotate = -75;
+    private float rotate = -150;
     private float distanceFromAvatar = 30;
     private float angleAroundAvatar = 0;
-    private Avatar avatar;
     private boolean thirdPerson = false;
+    private Avatar avatar;
 
     // pass into the terrain we need to load
     private Terrain myTerrain;
@@ -33,10 +33,9 @@ public class Camera implements KeyListener {
     private float rotateY = 0;
     private float rotateZ = 0;
 
-    public Camera(Point3D position, Terrain terrain, Avatar avatar) {
+    public Camera(Point3D position, Terrain terrain) {
         this.position = position;
         this.myTerrain = terrain;
-        this.avatar = avatar;
     }
 
     public Point3D getPosition() {
@@ -84,6 +83,8 @@ public class Camera implements KeyListener {
         	rotate -= turnSpeed;
             System.out.println("I press right");
         }
+
+        switchView(e);
     }
 
     @Override
@@ -96,13 +97,42 @@ public class Camera implements KeyListener {
         // update new cameraPosition
     	//calculate where Y axis of camera should be
     	rotateY = myTerrain.altitude(rotateX, rotateZ) + 0.5f;
-    	System.out.println("Rotate  Y: " + rotateY + "! Rotate Z: " + rotateZ + "! rotateX: " + rotateX);
-    	//place camera
-        CoordFrame3D frame = CoordFrame3D.identity().translate(0,0,-1.1f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
-    	
+
+    	// reset the position of avatar, also the rotation
+    	// place camera
+        CoordFrame3D frame = CoordFrame3D.identity();
+        if (thirdPerson == false) {
+            // place the camera position to avatar's position
+            frame = frame.translate(-0.2f,0f,-1.1f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
+        } else {
+            frame = frame.translate(0f,0f,-1.1f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
+        }
     	return frame;
     }
 
+    public CoordFrame3D resetAvatarFrame() {
+        // update new cameraPosition
+        //calculate where Y axis of camera should be
+        rotateY = myTerrain.altitude(rotateX, rotateZ) + 0.5f;
+
+        // reset the position of avatar, also the rotation
+        CoordFrame3D frame = CoordFrame3D.identity();
+        if (thirdPerson == false) {
+            frame = frame.translate(1f,0f,-1.1f).translate(-rotateX, -rotateY, -rotateZ);
+        } else {
+            frame = frame.translate(0f,0f,-1.1f).translate(-rotateX, -rotateY, -rotateZ);
+        }
+        return frame;
+    }
+
+
+    public Point3D getNewPos() {
+        return new Point3D(rotateX, rotateY-0.5f, rotateZ);
+    }
+
+    public float getRotate() {
+        return this.rotate;
+    }
 
     private void calculateZoom(KeyEvent e) {
         int keyCode = e.getKeyCode();
@@ -158,13 +188,13 @@ public class Camera implements KeyListener {
         return distanceFromAvatar * (float)Math.sin(Math.toRadians(pitch));
     }
 
-    private void calculateCameraPosition(float horiDistance, float verticeDistance) {
-        float theta = avatar.getRotateY() + angleAroundAvatar;
-        float offsetX = horiDistance * (float)Math.sin(Math.toRadians(theta));
-        float offsetZ = horiDistance * (float)Math.cos(Math.toRadians(theta));
-        float newX = avatar.getPosition().getX() - offsetX;
-        float newY = avatar.getPosition().getY() + verticeDistance;
-        float newZ = avatar.getPosition().getZ() - offsetZ;
-
-    }
+//    private void calculateCameraPosition(float horiDistance, float verticeDistance) {
+//        float theta = avatar.getRotateY() + angleAroundAvatar;
+//        float offsetX = horiDistance * (float)Math.sin(Math.toRadians(theta));
+//        float offsetZ = horiDistance * (float)Math.cos(Math.toRadians(theta));
+//        float newX = avatar.getPosition().getX() - offsetX;
+//        float newY = avatar.getPosition().getY() + verticeDistance;
+//        float newZ = avatar.getPosition().getZ() - offsetZ;
+//
+//    }
 }

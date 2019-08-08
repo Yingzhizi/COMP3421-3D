@@ -16,10 +16,10 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 
 public class Avatar {
-    Texture texture;
     private Point3D position;
     float rotateX, rotateY, rotateZ;
     float scale;
+    private Texture texture;
     private TriangleMesh mesh;
     private static final float RUN_SPEED = 0.1f;
     private static final float TURN_SPEED = 1.5f;
@@ -27,8 +27,7 @@ public class Avatar {
     private float currentSpeed = 0;
     private float currentTurnSpeed = 0;
 
-    public Avatar(Texture tex, Point3D position, float rX, float rY, float rZ) {
-        this.texture = tex;
+    public Avatar(Point3D position, float rX, float rY, float rZ) {
         this.position = position;
         this.rotateX = rX;
         this.rotateY = rY;
@@ -38,12 +37,10 @@ public class Avatar {
 
     /**
      * change position of avatar
-     * @param dx
-     * @param dy
-     * @param dz
+     * @param newPosition
      */
-    public void increasePosition(float dx, float dy, float dz) {
-        this.position.translate(dx, dy, dz);
+    public void setPosition(Point3D newPosition) {
+        this.position = newPosition;
 
     }
 
@@ -57,9 +54,6 @@ public class Avatar {
         this.rotateX += dx;
         this.rotateY += dy;
         this.rotateZ += dz;
-    }
-    public Texture getTexture() {
-        return texture;
     }
 
     public float getRotateX() {
@@ -82,11 +76,11 @@ public class Avatar {
         return position;
     }
     //initiate tree, create triangleMesh from ply file
-    public void init(GL3 gl, Texture tex) {
+    public void init(GL3 gl) {
         try {
             mesh = new TriangleMesh("res/models/bunny_res2.ply", true, true);
             mesh.init(gl);
-            this.texture = tex;
+            this.texture = new Texture(gl, "res/textures/BrightPurpleMarble.png", "png", true);;
         } catch (Exception e) {
             System.out.println("Something is wrong");
         }
@@ -94,7 +88,12 @@ public class Avatar {
 
     public void display(GL3 gl, CoordFrame3D frame) {
         // move the frame to the right position
-        frame = frame.translate(0, -0.04f, 0);
+        frame = frame.translate(getPosition().getX(), getPosition().getY()-0.02f, getPosition().getZ()).rotateY(-85);
+        // bind texture
+        Shader.setInt(gl, "tex", 0);
+        gl.glActiveTexture(GL.GL_TEXTURE0);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, this.texture.getId());
+        Shader.setPenColor(gl, Color.WHITE);
         mesh.draw(gl, frame);
     }
 }

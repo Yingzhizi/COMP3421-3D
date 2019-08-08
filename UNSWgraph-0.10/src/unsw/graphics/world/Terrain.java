@@ -4,6 +4,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import sun.security.x509.AVA;
 import unsw.graphics.Vector3;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
@@ -33,7 +34,7 @@ public class Terrain {
     private Texture texture;
     private Texture treeTexture;
     private Texture avatarTexture;
-    private Avatar avatar;
+    private Texture roadTexture;
 
 
 
@@ -253,16 +254,19 @@ public class Terrain {
 
     public void initRoad(GL3 gl) {
         for (Road road : roads) {
-            road.init(gl);
+            road.init(gl, this.roadTexture);
         }
     }
     
     public void drawRoad(GL3 gl, CoordFrame3D frame) {
         initRoad(gl);
         // set shader color
+        Shader.setInt(gl, "tex", 0);
+        gl.glActiveTexture(GL.GL_TEXTURE0);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, this.roadTexture.getId());
         Shader.setPenColor(gl, Color.WHITE);
+
         for (Road road : roads) {
-            road.init(gl);
             road.draw(gl, frame);
         }
     }
@@ -323,7 +327,7 @@ public class Terrain {
     public void loadTexture(GL3 gl) {
         this.texture = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
         this.treeTexture = new Texture(gl, "res/textures/tree.png", "png", true);
-        this.avatarTexture = new Texture(gl, "res/textures/BrightPurpleMarble.png", "png", true);
+        this.roadTexture = new Texture(gl, "res/textures/rock.bmp", "bmp", true);
     }
 
     public void drawTerrain(GL3 gl, CoordFrame3D frame) {
@@ -336,21 +340,8 @@ public class Terrain {
 
     }
 
-    public void initAvatar(GL3 gl) {
-        this.avatar = new Avatar(avatarTexture, new Point3D(1, (float)this.getGridAltitude(1, 1), 1), 0, 0, 0);
-        this.avatar.init(gl, this.avatarTexture);
 
-    }
 
-    public void drawAvatar(GL3 gl, CoordFrame3D frame) {
-        initAvatar(gl);
-        Shader.setInt(gl, "tex", 0);
-        gl.glActiveTexture(GL.GL_TEXTURE0);
-        gl.glBindTexture(GL.GL_TEXTURE_2D, this.avatarTexture.getId());
-        Shader.setPenColor(gl, Color.WHITE);
-        this.avatar.display(gl, frame);
-
-    }
     public void init(GL3 gl) {
         initTerrian(gl);
         // load texture of terrain
@@ -361,12 +352,5 @@ public class Terrain {
         drawTerrain(gl, frame);
         drawTree(gl, frame);
         drawRoad(gl, frame);
-        drawAvatar(gl, frame);
-        
     }
-
-    public Avatar getAvatar() {
-        return this.avatar;
-    }
-
 }

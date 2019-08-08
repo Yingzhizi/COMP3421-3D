@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import com.jogamp.newt.event.KeyListener;
 import com.jogamp.opengl.GL3;
 
 import unsw.graphics.Application3D;
@@ -25,6 +26,8 @@ public class World extends Application3D{
 
     private Terrain terrain;
     private Camera camera;
+    private Avatar avatar;
+    private boolean thirdPlayer;
 
 	private Point2D myMousePoint = null;
 	private static final int ROTATION_SCALE = 1;
@@ -34,7 +37,8 @@ public class World extends Application3D{
     public World(Terrain terrain) {
     	super("Assignment 2", 1000, 1000);
         this.terrain = terrain;
-        this.camera = new Camera(new Point3D(0f, 0.5f, -1.1f), terrain, terrain.getAvatar());
+		this.avatar = new Avatar(new Point3D(1, (float)terrain.getGridAltitude(1, 1), 1), 0, 0, 0);
+        this.camera = new Camera(new Point3D(0f, 0f, 0f), terrain);
 
     }
 
@@ -59,10 +63,14 @@ public class World extends Application3D{
 
 		// change with camera
 		CoordFrame3D frame = camera.resetFrame();
+		CoordFrame3D avatarFame = camera.resetAvatarFrame();
 		//Shader.setViewMatrix(gl, frame.getMatrix());
-
+		// reset the position of avatar, also the rotation
+		avatar.setPosition(camera.getNewPos());
+		avatar.increaseRotation(0, camera.getRotate(),0);
+		System.out.println("new x:" + avatar.getPosition().getX() + ";" + "new y: " + avatar.getPosition().getY() + "; new z" + avatar.getPosition().getZ());
 		terrain.draw(gl, frame);
-
+		avatar.display(gl, avatarFame);
 	}
 
 	@Override
@@ -73,6 +81,7 @@ public class World extends Application3D{
 	@Override
 	public void init(GL3 gl) {
 		super.init(gl);
+		getWindow().addKeyListener(this.camera);
 		Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl",
 				"shaders/fragment_tex_phong.glsl");
 		shader.use(gl);
@@ -92,7 +101,7 @@ public class World extends Application3D{
 		Shader.setPoint3D(gl, "viewPosition", camera.getPosition());
 
 		terrain.init(gl);
-		getWindow().addKeyListener(this.camera);
+		avatar.init(gl);
 	}
 
 	@Override
@@ -101,4 +110,24 @@ public class World extends Application3D{
         Shader.setProjMatrix(gl, Matrix4.perspective(60, width/(float)height, 1, 100));
 	}
 
+//	private void switchView(KeyEvent e) {
+//		int keyCode = e.getKeyCode();
+//		if (keyCode == KeyEvent.VK_C) {
+//			if (this.thirdPlayer == false) {
+//				this.thirdPlayer = true;
+//			} else {
+//				this.thirdPlayer = false;
+//			}
+//		}
+//	}
+//
+//	@Override
+//	public void keyPressed(KeyEvent e) {
+//		switchView(e);
+//	}
+//
+//	@Override
+//	public void keyReleased(KeyEvent keyEvent) {
+//
+//	}
 }
