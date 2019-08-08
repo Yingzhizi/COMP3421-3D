@@ -80,7 +80,7 @@ public class Avatar {
         try {
             mesh = new TriangleMesh("res/models/bunny_res2.ply", true, true);
             mesh.init(gl);
-            this.texture = new Texture(gl, "res/textures/BrightPurpleMarble.png", "png", true);;
+            this.texture = new Texture(gl, "res/textures/fur.png", "png", true);;
         } catch (Exception e) {
             System.out.println("Something is wrong");
         }

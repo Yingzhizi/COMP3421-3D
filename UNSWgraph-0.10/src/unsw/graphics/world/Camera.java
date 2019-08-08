@@ -115,7 +115,7 @@ public class Camera implements KeyListener {
     public CoordFrame3D resetAvatarFrame() {
         // update new cameraPosition
         //calculate where Y axis of camera should be
-        rotateY = myTerrain.altitude(rotateX, rotateZ) + 0.5f;
+        rotateY = myTerrain.altitude(rotateX, rotateZ) + 0.8f;
 
         // reset the position of avatar, also the rotation
         CoordFrame3D frame = CoordFrame3D.identity();
