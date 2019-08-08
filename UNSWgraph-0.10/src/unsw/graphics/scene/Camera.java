@@ -15,7 +15,7 @@ import unsw.graphics.geometry.Point2D;
  * @author malcolmr
  * @author Robert Clifton-Everest
  */
-public class Camera extends SceneObject {
+public class  Camera extends SceneObject {
     
     /**
      * The aspect ratio is the ratio of the width of the window to the height.
