@@ -30,13 +30,19 @@ public class World extends Application3D implements KeyListener{
     private Camera camera;
     
     //day time and night time mode
-    private boolean night;
+    private boolean night = false;
 
 	private Point2D myMousePoint = null;
 	private static final int ROTATION_SCALE = 1;
 	private float rotateX = 0;
 	private float rotateY = 0;
 	private Point3D sunPos;
+	
+	//Lighting property that works for day time and night time
+	private Color lightIntensity = Color.WHITE;
+	private Color sunlightIntensity = Color.WHITE;
+	private Color ambientIntensity = new Color(0.3f, 0.3f, 0.3f);
+	
 
     public World(Terrain terrain) {
     	super("Assignment 2", 1000, 1000);
@@ -68,7 +74,13 @@ public class World extends Application3D implements KeyListener{
 		CoordFrame3D frame = camera.resetFrame(gl);
 //		Shader.setViewMatrix(gl, camera.getMatrix());
 		if(night) {
-			
+			Shader.setColor(gl, "lightIntensity", this.lightIntensity);
+			Shader.setColor(gl, "sunlightIntensity", this.sunlightIntensity);
+			Shader.setColor(gl, "ambientIntensity", this.ambientIntensity);
+		} else {
+			Shader.setColor(gl, "lightIntensity", this.lightIntensity);
+			Shader.setColor(gl, "sunlightIntensity", this.sunlightIntensity);
+			Shader.setColor(gl, "ambientIntensity", this.ambientIntensity);
 		}
 		terrain.draw(gl, frame);
 
@@ -86,12 +98,9 @@ public class World extends Application3D implements KeyListener{
 		Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl",
 				"shaders/fragment_tex_phong.glsl");
 		shader.use(gl);
-
+		
 		// Set the lighting properties
 		Shader.setPoint3D(gl, "lightPos", sunPos);
-		Shader.setColor(gl, "lightIntensity", Color.WHITE);
-		Shader.setColor(gl, "sunlightIntensity", Color.WHITE);
-		Shader.setColor(gl, "ambientIntensity", new Color(0.3f, 0.3f, 0.3f));
 
 		// Set the material properties
 		Shader.setColor(gl, "ambientCoeff", Color.WHITE);
@@ -120,9 +129,15 @@ public class World extends Application3D implements KeyListener{
 			//make night time boolean the opposite
 			this.night = this.night == true ? false : true;
 			if(night) {
-				//specular
+				this.lightIntensity = new Color(0.3f, 0.3f, 0.3f);
+				this.sunlightIntensity = new Color(0.3f, 0.3f, 0.3f);
+				this.ambientIntensity = new Color(0.2f, 0.2f, 0.2f);
+				System.out.println("WE ARE IN NIGHT MODE");
 			} else {
-				
+				this.lightIntensity = Color.WHITE;
+				this.sunlightIntensity = Color.WHITE;
+				this.ambientIntensity = new Color(0.3f, 0.3f, 0.3f);
+				System.out.println("WE ARE IN DAY MODE");
 			}
 		}
 		
