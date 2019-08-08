@@ -103,10 +103,10 @@ public class Camera implements KeyListener {
         if (thirdPerson == false) {
             // place the camera position to avatar's position
             rotateY = myTerrain.altitude(rotateX, rotateZ + 0.5f) + 0.7f;
-            frame = frame.translate(0f,0f,-0.8f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
+            frame = frame.translate(0f,-0.3f,-0.8f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
         } else {
             rotateY = myTerrain.altitude(rotateX, rotateZ) + 0.5f;
-            frame = frame.translate(0f,0f,-1.1f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
+            frame = frame.translate(0f,-0.3f,-1.5f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
         }
     	//System.out.println("Rotate  Y: " + rotateY + "! Rotate Z: " + rotateZ + "! rotateX: " + rotateX);
     	return frame;
@@ -120,9 +120,9 @@ public class Camera implements KeyListener {
         // reset the position of avatar, also the rotation
         CoordFrame3D frame = CoordFrame3D.identity();
         if (thirdPerson == false) {
-            frame = frame.translate(1f,0f,-1.1f).translate(-rotateX, -rotateY, -rotateZ);
+            frame = frame.translate(0f,-0.3f,-0.1f).translate(-rotateX, -rotateY, -rotateZ);
         } else {
-            frame = frame.translate(0f,0f,-1.1f).translate(-rotateX, -rotateY, -rotateZ);
+            frame = frame.translate(0f,-0.3f,-1.5f).translate(-rotateX, -rotateY, -rotateZ);
         }
         return frame;
     }

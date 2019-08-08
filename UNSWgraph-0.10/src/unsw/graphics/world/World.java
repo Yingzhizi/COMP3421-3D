@@ -47,7 +47,7 @@ public class World extends Application3D implements KeyListener{
 	
 
     public World(Terrain terrain) {
-    	super("Assignment 2", 1000, 1000);
+    	super("Assignment 2", 800, 800);
         this.terrain = terrain;
 		this.avatar = new Avatar(new Point3D(1, (float)terrain.getGridAltitude(1, 1), 1), 0, 0, 0);
         this.camera = new Camera(new Point3D(0f, 0f, 0f), terrain);
