@@ -66,7 +66,7 @@ public class World extends Application3D implements KeyListener{
      * @throws FileNotFoundException
      */
     public static void main(String[] args) throws FileNotFoundException {
-        Terrain terrain = LevelIO.load(new File("/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test1.json"));//"/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test4.json"));
+        Terrain terrain = LevelIO.load(new File("/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test5.json"));//"/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test4.json"));
         World world = new World(terrain);
         world.start();
     }
@@ -116,7 +116,7 @@ public class World extends Application3D implements KeyListener{
 		} else {
 			totaltimepassed = 0;
 		}
-		pond.draw(gl, frame.translate(0, -0.09f, 0));
+		pond.draw(gl, frame.translate(0, -0.095f, 0));
 		// somehow start switching
 
 	}
