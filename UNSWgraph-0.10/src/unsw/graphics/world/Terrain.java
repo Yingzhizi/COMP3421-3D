@@ -33,10 +33,8 @@ public class Terrain {
     private List<Road> roads;
     private Vector3 sunlight;
     private TriangleMesh terrainMesh;
-    private TriangleMesh grass;
     private Texture texture;
     private Texture treeTexture;
-    private Texture avatarTexture;
     private Texture roadTexture;
     private static final int IMAGE_SIZE = 64;
     private ByteBuffer chessImageBuf = Buffers.newDirectByteBuffer(IMAGE_SIZE*IMAGE_SIZE*4);
@@ -302,48 +300,45 @@ public class Terrain {
 
     }
 
-    public void initGround(GL3 gl) {
-        //Build the meshes
-        List<Point3D> grassVerts = new ArrayList<>();
-        grassVerts.add(new Point3D(-100, 0, 100));
-        grassVerts.add(new Point3D(100, 0, 100));
-        grassVerts.add(new Point3D(100, 0, -100));
-        grassVerts.add(new Point3D(-100, 0, -100));
-
-        List<Point2D> grassTexCoords = new ArrayList<>();
-        grassTexCoords.add(new Point2D(0, 0));
-        grassTexCoords.add(new Point2D(8, 0));
-        grassTexCoords.add(new Point2D(8, 8));
-        grassTexCoords.add(new Point2D(0, 8));
-
-        List<Integer> grassIndices = Arrays.asList(0,1,2, 0,2,3);
-
-        grass = new TriangleMesh(grassVerts, grassIndices, false, grassTexCoords);
-        grass.init(gl);
-    }
-
-    public void drawGround(GL3 gl, CoordFrame3D frame) {
-        Shader.setInt(gl, "tex", 0);
-        gl.glActiveTexture(GL.GL_TEXTURE0);
-        gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
-        Shader.setPenColor(gl, Color.WHITE);
-        grass.draw(gl, frame);
-    }
-
+//    public void initGround(GL3 gl) {
+//        //Build the meshes
+//        List<Point3D> grassVerts = new ArrayList<>();
+//        grassVerts.add(new Point3D(-100, 0, 100));
+//        grassVerts.add(new Point3D(100, 0, 100));
+//        grassVerts.add(new Point3D(100, 0, -100));
+//        grassVerts.add(new Point3D(-100, 0, -100));
+//
+//        List<Point2D> grassTexCoords = new ArrayList<>();
+//        grassTexCoords.add(new Point2D(0, 0));
+//        grassTexCoords.add(new Point2D(8, 0));
+//        grassTexCoords.add(new Point2D(8, 8));
+//        grassTexCoords.add(new Point2D(0, 8));
+//
+//        List<Integer> grassIndices = Arrays.asList(0,1,2, 0,2,3);
+//
+//        grass = new TriangleMesh(grassVerts, grassIndices, false, grassTexCoords);
+//        grass.init(gl);
+//    }
+//
+//    public void drawGround(GL3 gl, CoordFrame3D frame) {
+//        Shader.setInt(gl, "tex", 0);
+//        gl.glActiveTexture(GL.GL_TEXTURE0);
+//        gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
+//        Shader.setPenColor(gl, Color.WHITE);
+//        grass.draw(gl, frame);
+//    }
 
 
     public void init(GL3 gl) {
         initTerrian(gl);
         // load texture of terrain
         loadTexture(gl);
-        //initGround(gl);
     }
 
     public void draw(GL3 gl, CoordFrame3D frame) {
         drawTerrain(gl, frame);
         drawTree(gl, frame);
         drawRoad(gl, frame);
-        //drawGround(gl, frame);
     }
 
     public void destroy(GL3 gl) {
@@ -351,7 +346,6 @@ public class Terrain {
         treeTexture.destroy(gl);
         roadTexture.destroy(gl);
         terrainMesh.destroy(gl);
-        grass.destroy(gl);
     }
 
 }
