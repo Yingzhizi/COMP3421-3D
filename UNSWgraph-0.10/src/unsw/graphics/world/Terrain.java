@@ -1,9 +1,12 @@
 package unsw.graphics.world;
 
 import java.awt.*;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import com.jogamp.common.nio.Buffers;
 import unsw.graphics.Vector3;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
@@ -30,10 +33,13 @@ public class Terrain {
     private List<Road> roads;
     private Vector3 sunlight;
     private TriangleMesh terrainMesh;
+    private TriangleMesh grass;
     private Texture texture;
     private Texture treeTexture;
     private Texture avatarTexture;
     private Texture roadTexture;
+    private static final int IMAGE_SIZE = 64;
+    private ByteBuffer chessImageBuf = Buffers.newDirectByteBuffer(IMAGE_SIZE*IMAGE_SIZE*4);
 
 
 
@@ -145,24 +151,21 @@ public class Terrain {
             altitude = linearInterPolateZ(z, bottomZ, topZ, x, x);
         } else {
             // point is inside the 1 * 1 square
-            float hypotenuse = x - leftX + bottomZ;
-
-            if(z > hypotenuse) {
+            float hypotenuse = topZ - z + leftX;
+            if(x < hypotenuse) {
                 // in left triangle, above hypotenuse
                 float lipz1 = linearInterPolateZ(z, bottomZ, topZ, leftX, leftX);
-                float lipz2 = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
-                float hypoX = z - bottomZ + leftX;
-                altitude = bilinearInterpolate(x, (float)leftX, hypoX, lipz1, lipz2);
+                float lipz2 = linearInterPolateZ(z, bottomZ, topZ, rightX, leftX);
+                altitude = bilinearInterpolate(x, (float)leftX, hypotenuse, lipz1, lipz2);
                 System.out.println("above: ");
-            } else if (z < hypotenuse){
+            } else if (x > hypotenuse){
                 // in the right triangle, below hypotenuse
-                float lipz1 = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
+                float lipz1 = linearInterPolateZ(z, bottomZ, topZ, rightX, leftX);
                 float lipz2 = linearInterPolateZ(z, bottomZ, topZ, rightX, rightX);
-                float hypoX = z - bottomZ + leftX;
-                altitude = bilinearInterpolate(x, hypoX, (float)rightX, lipz1, lipz2);
+                altitude = bilinearInterpolate(x, hypotenuse, (float)rightX, lipz1, lipz2);
                 System.out.println("below: ");
             } else {
-                altitude = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
+                altitude = linearInterPolateZ(z, bottomZ, topZ, rightX, leftX);
                 System.out.println("hypotenuse:");
             }
         }
@@ -299,24 +302,56 @@ public class Terrain {
 
     }
 
+    public void initGround(GL3 gl) {
+        //Build the meshes
+        List<Point3D> grassVerts = new ArrayList<>();
+        grassVerts.add(new Point3D(-100, 0, 100));
+        grassVerts.add(new Point3D(100, 0, 100));
+        grassVerts.add(new Point3D(100, 0, -100));
+        grassVerts.add(new Point3D(-100, 0, -100));
+
+        List<Point2D> grassTexCoords = new ArrayList<>();
+        grassTexCoords.add(new Point2D(0, 0));
+        grassTexCoords.add(new Point2D(8, 0));
+        grassTexCoords.add(new Point2D(8, 8));
+        grassTexCoords.add(new Point2D(0, 8));
+
+        List<Integer> grassIndices = Arrays.asList(0,1,2, 0,2,3);
+
+        grass = new TriangleMesh(grassVerts, grassIndices, false, grassTexCoords);
+        grass.init(gl);
+    }
+
+    public void drawGround(GL3 gl, CoordFrame3D frame) {
+        Shader.setInt(gl, "tex", 0);
+        gl.glActiveTexture(GL.GL_TEXTURE0);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
+        Shader.setPenColor(gl, Color.WHITE);
+        grass.draw(gl, frame);
+    }
+
 
 
     public void init(GL3 gl) {
         initTerrian(gl);
         // load texture of terrain
         loadTexture(gl);
+        //initGround(gl);
     }
 
     public void draw(GL3 gl, CoordFrame3D frame) {
         drawTerrain(gl, frame);
         drawTree(gl, frame);
         drawRoad(gl, frame);
+        //drawGround(gl, frame);
     }
 
     public void destroy(GL3 gl) {
         texture.destroy(gl);
         treeTexture.destroy(gl);
         roadTexture.destroy(gl);
+        terrainMesh.destroy(gl);
+        grass.destroy(gl);
     }
 
 }
