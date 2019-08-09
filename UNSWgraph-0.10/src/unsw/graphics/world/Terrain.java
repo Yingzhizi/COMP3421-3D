@@ -312,4 +312,11 @@ public class Terrain {
         drawTree(gl, frame);
         drawRoad(gl, frame);
     }
+
+    public void destroy(GL3 gl) {
+        texture.destroy(gl);
+        treeTexture.destroy(gl);
+        roadTexture.destroy(gl);
+    }
+
 }

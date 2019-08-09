@@ -18,6 +18,9 @@ uniform float phongExp;
 
 uniform sampler2D tex;
 
+// for fog
+uniform vec3 skyColor;
+
 in vec4 viewPosition;
 in vec3 m;
 
@@ -25,6 +28,9 @@ in vec2 texCoordFrag;
 
 void main()
 {
+    const float density = 0.08;
+    const float gradient = 1.5;
+
     // Compute the s, v and r vectors
     //vec3 s = normalize(view_matrix*vec4(lightPos,1) - viewPosition).xyz;
     vec3 s = normalize(view_matrix*vec4(lightPos,0)).xyz;
@@ -43,5 +49,11 @@ void main()
 
     vec4 ambientAndDiffuse = vec4(ambient + diffuse, 1);
 
+    // distance
+    float dist = length(viewPosition.xyz);
+    float visibility = 1.0 / exp((dist * density) * (dist * density));
+    visibility = clamp(visibility, 0.0, 1.0);
+
     outputColor = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular, 1);
+    outputColor = mix(vec4(skyColor, 1.0), outputColor, visibility);
 }

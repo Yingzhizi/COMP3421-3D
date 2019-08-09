@@ -12,11 +12,7 @@ import java.io.IOException;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.opengl.GL3;
 
-import unsw.graphics.Application3D;
-import unsw.graphics.CoordFrame3D;
-import unsw.graphics.Matrix4;
-import unsw.graphics.Shader;
-import unsw.graphics.Texture;
+import unsw.graphics.*;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
 
@@ -32,7 +28,7 @@ public class World extends Application3D implements KeyListener{
     private Avatar avatar;
     
     //day time and night time mode
-    private boolean night = false;
+    private boolean night;
 
 	private Point2D myMousePoint = null;
 	private static final int ROTATION_SCALE = 1;
@@ -61,7 +57,7 @@ public class World extends Application3D implements KeyListener{
      * @throws FileNotFoundException
      */
     public static void main(String[] args) throws FileNotFoundException {
-        Terrain terrain = LevelIO.load(new File("/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test1.json"));//"/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test4.json"));
+        Terrain terrain = LevelIO.load(new File("/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test3.json"));//"/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test4.json"));
         World world = new World(terrain);
         world.start();
     }
@@ -76,20 +72,20 @@ public class World extends Application3D implements KeyListener{
 		// change with camera
 		CoordFrame3D frame = camera.resetFrame();
 		CoordFrame3D avatarFame = camera.resetAvatarFrame();
-		//Shader.setViewMatrix(gl, frame.getMatrix());
 		// reset the position of avatar, also the rotation
 		avatar.setPosition(camera.getNewPos());
 		avatar.increaseRotation(0, camera.getRotate(),0);
 		System.out.println("new x:" + avatar.getPosition().getX() + ";" + "new y: " + avatar.getPosition().getY() + "; new z" + avatar.getPosition().getZ());
-//		Shader.setViewMatrix(gl, camera.getMatrix());
 		if(night) {
 			Shader.setColor(gl, "lightIntensity", this.lightIntensity);
 			Shader.setColor(gl, "sunlightIntensity", this.sunlightIntensity);
 			Shader.setColor(gl, "ambientIntensity", this.ambientIntensity);
+			Shader.setColor(gl, "skyColor", Color.GRAY);
 		} else {
 			Shader.setColor(gl, "lightIntensity", this.lightIntensity);
 			Shader.setColor(gl, "sunlightIntensity", this.sunlightIntensity);
 			Shader.setColor(gl, "ambientIntensity", this.ambientIntensity);
+			Shader.setColor(gl, "skyColor", Color.WHITE);
 		}
 		terrain.draw(gl, frame);
 		avatar.display(gl, avatarFame);
