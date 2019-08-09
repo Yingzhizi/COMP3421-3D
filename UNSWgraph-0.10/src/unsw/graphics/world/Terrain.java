@@ -4,7 +4,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import sun.security.x509.AVA;
 import unsw.graphics.Vector3;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
@@ -113,50 +112,16 @@ public class Terrain {
 
         // TODO: Implement this
         // out of bound
-        if (x < 0 || x > width || z < 0 || z > depth) {
+        if (x < 0 || x > width - 1 || z < 0 || z > depth - 1) {
             return altitude;
         }
 
-//        // test point is above or below a line
-//        // p1(leftX, topZ) p0(rightX, topZ)
-//        // -----------
-//        // |        /|
-//        // |   I1  / |
-//        // |    . /  |
-//        // |     /   |
-//        // |    /    |
-//        // |   /  .  |
-//        // |  /  I2  |
-//        // | /       |
-//        // |----------
-//        if ((int)x == x && (int)z == z) {
-//            System.out.println("whole number: " + (float)getGridAltitude((int)x, (int)z));
-//            return (float)getGridAltitude((int)x, (int)z);
-//
-//        } else if ((int)x == x && (int)z != z) {
-//            return linearInterPolateZ(z, bottomZ, topZ, x, x);
-//        } else if ((int)z == z && (int)x != x) {
-//            return linearInterPolateX(x, leftX, rightX, z, z);
-//        } else {
-//            float hypotenuse = z - bottomZ + leftX;
-//            if(x > hypotenuse) {
-//                float lipz1 = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
-//                float lipz2 = linearInterPolateZ(z, bottomZ, topZ, rightX, rightX);
-//                altitude = bilinearInterpolate(x, hypotenuse, (float)rightX, lipz1, lipz2);
-//            } else if (x < hypotenuse){
-//                float lipz1 = linearInterPolateZ(z, bottomZ, topZ, leftX, leftX);
-//                float lipz2 = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
-//                altitude = bilinearInterpolate(x, (float)leftX, hypotenuse, lipz1, lipz2);
-//            } else {
-//                altitude = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
-//            }
-//        }
-//        return altitude;
         int leftX = (int)Math.floor(x);
         int rightX = (int)Math.ceil(x);
         int bottomZ = (int)Math.floor(z);
         int topZ = (int)Math.ceil(z);
-        // test point is above or below a line
+
+        // test point is above or below a line, or in the edges of square
         // p1(leftX, topZ) p0(rightX, topZ)
         // -----------
         // |        /|
@@ -169,23 +134,32 @@ public class Terrain {
         // | /       |
         // |----------
 
-        float hypotenuse = z - bottomZ + leftX;
         if((int)x == x && (int)z == z) {
+            // if x and z are integer, directly return altitude
             altitude =  (float)getGridAltitude((int)x, (int)z);
         } else if ((int)x != x && (int)z == z) {
+            // point is in bottom or top edges
             altitude =  linearInterPolateX(x, leftX, rightX, z, z);
         } else if ((int)x == x && (int)z != z) {
+            // point is in left side or right side edges
             altitude = linearInterPolateZ(z, bottomZ, topZ, x, x);
         } else {
-            if(x < hypotenuse) {
+            // point is inside the 1 * 1 square
+            float hypotenuse = x - leftX + bottomZ;
+
+            if(z > hypotenuse) {
+                // in left triangle, above hypotenuse
                 float lipz1 = linearInterPolateZ(z, bottomZ, topZ, leftX, leftX);
                 float lipz2 = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
-                altitude = bilinearInterpolate(x, (float)leftX, hypotenuse, lipz1, lipz2);
+                float hypoX = z - bottomZ + leftX;
+                altitude = bilinearInterpolate(x, (float)leftX, hypoX, lipz1, lipz2);
                 System.out.println("above: ");
-            } else if (x > hypotenuse){
+            } else if (z < hypotenuse){
+                // in the right triangle, below hypotenuse
                 float lipz1 = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
                 float lipz2 = linearInterPolateZ(z, bottomZ, topZ, rightX, rightX);
-                altitude = bilinearInterpolate(x, hypotenuse, (float)rightX, lipz1, lipz2);
+                float hypoX = z - bottomZ + leftX;
+                altitude = bilinearInterpolate(x, hypoX, (float)rightX, lipz1, lipz2);
                 System.out.println("below: ");
             } else {
                 altitude = linearInterPolateZ(z, bottomZ, topZ, leftX, rightX);
@@ -274,58 +248,43 @@ public class Terrain {
     public void initTerrian(GL3 gl) {
         ArrayList<Point3D> allVertices = new ArrayList<>();
         ArrayList<Point2D> textureCoords = new ArrayList<>();
-        ArrayList<Integer> triangleMashes = new ArrayList<>();
 
-        // save all the point into allVertices
-        for (int x = 0; x < width; x++) {
-            for (int z = 0; z < width; z++) {
-                allVertices.add(new Point3D((float)x, (float)getGridAltitude(x, z), (float)z));
-                // add current vertex to texture array
-                textureCoords.add(x, new Point2D((float)x, (float)z));
-            }
-        }
-
-        // add the vertives of each triangle mesh to triangleMeshes list
         for (int x = 0; x < width - 1; x++) {
             for (int z = 0; z < depth - 1; z++) {
-                // add triangles to the triangleMashes
-                // curr
-                // x----------
-                // |        /|
-                // | LEFT  / |
-                // |      /  |
-                // |     /   |
-                // |    /    |
-                // |   /     |
-                // |  / RIGHT|
-                // | /       |
-                // |----------
+                // add left triangle
+                Point3D topLeft = new Point3D((float)x, (float)getGridAltitude(x, z), (float)z);
+                Point3D bottomLeft = new Point3D((float)x, (float)getGridAltitude(x, z + 1), (float)z + 1);
+                Point3D topRight = new Point3D((float)x + 1, (float)getGridAltitude(x + 1, z), (float)z);
+                Point3D bottomRight = new Point3D((float)x + 1, (float)getGridAltitude(x + 1, z + 1), (float)z + 1);
 
-                int topLeft = z + x * depth;
-                int leftButton = 1 + z + x * depth;
-                int topRight = z + ((x + 1) * depth);
-                int rightButton = 1 + z + ((x + 1) * depth);
+                allVertices.add(topLeft);
+                allVertices.add(bottomLeft);
+                allVertices.add(topRight);
+                // add current vertex to texture array
+                textureCoords.add(new Point2D((float)x, (float)z));
+                textureCoords.add(new Point2D((float)x, (float)z + 1));
+                textureCoords.add(new Point2D((float)x + 1, (float)z));
 
-                // add the left triangle
-                triangleMashes.add(topLeft);
-                triangleMashes.add(leftButton);
-                triangleMashes.add(topRight);
+                // add right triangle
+                allVertices.add(topRight);
+                allVertices.add(bottomLeft);
+                allVertices.add(bottomRight);
 
-                // add the right triangle
-                triangleMashes.add(topRight);
-                triangleMashes.add(leftButton);
-                triangleMashes.add(rightButton);
+                // add current vertex to texture array
+                textureCoords.add(new Point2D((float)x + 1, (float)z));
+                textureCoords.add(new Point2D((float)x, (float)z + 1));
+                textureCoords.add(new Point2D((float)x + 1, (float)z + 1));
             }
         }
 
-        // create new triangleMesh for terrian
-        terrainMesh = new TriangleMesh(allVertices, triangleMashes, true, textureCoords);
+        // create new triangleMesh for terrain
+        terrainMesh = new TriangleMesh(allVertices, true, textureCoords);
         terrainMesh.init(gl);
     }
 
     // add texture to terrain
     public void loadTexture(GL3 gl) {
-        this.texture = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
+        this.texture = new Texture(gl, "res/textures/grass.png", "png", true);
         this.treeTexture = new Texture(gl, "res/textures/tree.png", "png", true);
         this.roadTexture = new Texture(gl, "res/textures/rock.bmp", "bmp", true);
     }

@@ -65,24 +65,20 @@ public class Camera implements KeyListener {
             rotateX -= runSpeed * Math.sin(Math.toRadians(rotate));
             rotateZ -= runSpeed * Math.cos(Math.toRadians(rotate));
             this.position = new Point3D(rotateX, myTerrain.altitude(rotateX, rotateZ), rotateZ);
-            //System.out.println("I press up");
         } else if(keyCode == KeyEvent.VK_DOWN) {
         	//moves backwards
         	rotateX += runSpeed * Math.sin(Math.toRadians(rotate));
         	rotateZ += runSpeed * Math.cos(Math.toRadians(rotate));
             this.position = new Point3D(rotateX, myTerrain.altitude(rotateX, rotateZ), rotateZ);
-            //System.out.println("I press down");
         }
 
         // when turn left or right, camera's position stay the same
         else if(keyCode == KeyEvent.VK_LEFT) {
         	//moves left
         	rotate += turnSpeed;
-//            System.out.println("I press left");
         } else if(keyCode == KeyEvent.VK_RIGHT) {
         	//moves right
         	rotate -= turnSpeed;
-//            System.out.println("I press right");
         }
 
         switchView(e);
