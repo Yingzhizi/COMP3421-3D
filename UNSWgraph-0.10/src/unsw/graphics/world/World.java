@@ -121,9 +121,11 @@ public class World extends Application3D implements KeyListener{
 			Shader.setPoint3D(gl, "cameraPos", camera.getPosition());
 			Shader.setFloat(gl, "cutoff", 10f);
 			Shader.setFloat(gl, "attentExp", 128f);
+			Shader.setColor(gl, "skyColor", Color.GRAY);
 			System.out.println("MAGIC CASTLE");
 		} else {
 			Shader.setInt(gl, "torch", 0);
+			Shader.setColor(gl, "skyColor", Color.WHITE);
 		}
 
 		terrain.draw(gl, frame);
