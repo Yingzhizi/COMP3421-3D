@@ -80,7 +80,7 @@ public class Avatar {
         try {
             mesh = new TriangleMesh("res/models/bunny_res2.ply", true, true);
             mesh.init(gl);
-            this.texture = new Texture(gl, "res/textures/BrightPurpleMarble.png", "png", true);;
+            this.texture = new Texture(gl, "res/textures/fur.png", "png", true);;
         } catch (Exception e) {
             System.out.println("Something is wrong");
         }
@@ -88,7 +88,7 @@ public class Avatar {
 
     public void display(GL3 gl, CoordFrame3D frame) {
         // move the frame to the right position
-        frame = frame.translate(getPosition().getX(), getPosition().getY()-0.02f, getPosition().getZ()).rotateY(-85);
+        frame = frame.translate(getPosition().getX(), getPosition().getY()-0.05f, getPosition().getZ()).rotateY(-85);
         // bind texture
         Shader.setInt(gl, "tex", 0);
         gl.glActiveTexture(GL.GL_TEXTURE0);

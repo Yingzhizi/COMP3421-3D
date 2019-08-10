@@ -6,7 +6,6 @@
 
 // Incoming vertex position
 in vec3 position;
-
 // Incoming normal
 in vec3 normal;
 
@@ -24,6 +23,7 @@ out vec3 m;
 
 out vec2 texCoordFrag;
 
+
 void main() {
 	// The global position is in homogenous coordinates
     vec4 globalPosition = model_matrix * vec4(position, 1);
@@ -38,4 +38,5 @@ void main() {
     m = normalize(view_matrix*model_matrix * vec4(normal, 0)).xyz;
 
     texCoordFrag = texCoord;
+
 }
