@@ -87,7 +87,7 @@ public class Avatar {
      */
     public void display(GL3 gl, CoordFrame3D frame) {
         // move the frame to the right position
-        frame = frame.translate(getPosition().getX(), getPosition().getY()-0.05f, getPosition().getZ()).rotateY(-85);
+        frame = frame.translate(getPosition().getX(), getPosition().getY()-0.03f, getPosition().getZ()).rotateY(-85);
         // bind texture
         Shader.setInt(gl, "tex", 0);
         gl.glActiveTexture(GL.GL_TEXTURE0);
