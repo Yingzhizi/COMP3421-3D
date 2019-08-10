@@ -4,7 +4,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import sun.security.x509.AVA;
+//import sun.security.x509.AVA;
 import unsw.graphics.Vector3;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
@@ -248,27 +248,28 @@ public class Terrain {
      *
      */
     public void addRoad(float width, List<Point2D> spine) {
-        Road road = new Road(width, spine, this);
+        Road road = new Road(width, spine);
         roads.add(road);
     }
 
-    public void initRoad(GL3 gl) {
-        for (Road road : roads) {
-            road.init(gl, this.roadTexture);
-        }
-    }
+//    public void initRoad(GL3 gl) {
+//        for (Road road : roads) {
+//        	System.out.println("FUCKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK");
+//            road.init(gl, this.roadTexture);
+//        }
+//    }
+//    
     
     public void drawRoad(GL3 gl, CoordFrame3D frame) {
-        initRoad(gl);
+        //initRoad(gl);
         // set shader color
         Shader.setInt(gl, "tex", 0);
         gl.glActiveTexture(GL.GL_TEXTURE0);
         gl.glBindTexture(GL.GL_TEXTURE_2D, this.roadTexture.getId());
-        Shader.setPenColor(gl, Color.WHITE);
-
         for (Road road : roads) {
             road.draw(gl, frame);
         }
+        Shader.setPenColor(gl, Color.WHITE);
     }
 
     public void initTerrian(GL3 gl) {
@@ -328,6 +329,9 @@ public class Terrain {
         this.texture = new Texture(gl, "res/textures/grass.bmp", "bmp", true);
         this.treeTexture = new Texture(gl, "res/textures/tree.png", "png", true);
         this.roadTexture = new Texture(gl, "res/textures/rock.bmp", "bmp", true);
+        for (Road r: this.roads) {
+        	r.init(gl, this);
+        }
     }
 
     public void drawTerrain(GL3 gl, CoordFrame3D frame) {

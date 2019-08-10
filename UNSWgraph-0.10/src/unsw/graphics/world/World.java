@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import com.jogamp.newt.event.KeyListener;
+import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GL3;
 
 import unsw.graphics.Application3D;
@@ -31,23 +32,27 @@ public class World extends Application3D implements KeyListener{
     private Camera camera;
     private Avatar avatar;
     
-    //day time and night time mode
+    //night time mode and shifting time
     private boolean night = false;
+    private boolean movingSun = false;
+    private long starttime = System.currentTimeMillis();
 
 	private Point2D myMousePoint = null;
 	private static final int ROTATION_SCALE = 1;
 	private float rotateX = 0;
 	private float rotateY = 0;
 	private Point3D sunPos;
+	private Point3D initSunPos;
+	private float sunAngle;
+	
 	
 	//Lighting property that works for day time and night time
-	private Color lightIntensity = Color.WHITE;
-	private Color sunlightIntensity = Color.WHITE;
-	private Color ambientIntensity = new Color(0.3f, 0.3f, 0.3f);
-	
+	private Color ambientIntensity = new Color(0.4f, 0.4f, 0.4f);
+	private Color diffuseCoeff = new Color(0.7f, 0.7f, 0.7f);
+	private Color specularCoeff = new Color(0.3f, 0.3f, 0.3f);
 
     public World(Terrain terrain) {
-    	super("Assignment 2", 1000, 1000);
+    	super("Assignment 2", 800, 800);
         this.terrain = terrain;
 		this.avatar = new Avatar(new Point3D(1, (float)terrain.getGridAltitude(1, 1), 1), 0, 0, 0);
         this.camera = new Camera(new Point3D(0f, 0f, 0f), terrain);
@@ -61,7 +66,7 @@ public class World extends Application3D implements KeyListener{
      * @throws FileNotFoundException
      */
     public static void main(String[] args) throws FileNotFoundException {
-        Terrain terrain = LevelIO.load(new File("/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test1.json"));//"/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test4.json"));
+        Terrain terrain = LevelIO.load(new File(args[0]));//"/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test1.json"));//"/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test4.json"));
         World world = new World(terrain);
         world.start();
     }
@@ -80,17 +85,43 @@ public class World extends Application3D implements KeyListener{
 		// reset the position of avatar, also the rotation
 		avatar.setPosition(camera.getNewPos());
 		avatar.increaseRotation(0, camera.getRotate(),0);
-		System.out.println("new x:" + avatar.getPosition().getX() + ";" + "new y: " + avatar.getPosition().getY() + "; new z" + avatar.getPosition().getZ());
+		//System.out.println("new x:" + avatar.getPosition().getX() + ";" + "new y: " + avatar.getPosition().getY() + "; new z" + avatar.getPosition().getZ());
 //		Shader.setViewMatrix(gl, camera.getMatrix());
-		if(night) {
-			Shader.setColor(gl, "lightIntensity", this.lightIntensity);
-			Shader.setColor(gl, "sunlightIntensity", this.sunlightIntensity);
-			Shader.setColor(gl, "ambientIntensity", this.ambientIntensity);
+
+		//set the lighting property
+		Shader.setPoint3D(gl, "lightPos", sunPos);
+		Shader.setColor(gl, "ambientIntensity", this.ambientIntensity);
+		Shader.setColor(gl, "lightIntensity", Color.WHITE);
+
+		
+		//material property
+		Shader.setColor(gl, "ambientCoeff", Color.WHITE);
+		Shader.setColor(gl, "diffuseCoeff", this.diffuseCoeff);
+		Shader.setColor(gl, "specularCoeff", this.specularCoeff);
+		Shader.setFloat(gl, "phongExp", 16f);
+
+		if(movingSun) {
+			long elapsedTime = System.currentTimeMillis() - this.starttime;
+			float timeInDay = ((float)elapsedTime % 15000f)/15000f;
+			this.sunAngle = (float) Math.toRadians(360 * timeInDay);
+			float updateX = ((float) Math.cos((double) this.sunAngle)*2f);
+			float updateY = ((float) Math.sin((double) this.sunAngle)*2f);
+			
+			this.sunPos = new Point3D(updateX, updateY, sunPos.getZ());
+ 		} else if(night) {
+			Shader.setInt(gl, "torch", 1);
+			Shader.setPoint3D(gl, "torchDirection", new Point3D(0,0, -1));
+			Shader.setColor(gl, "torchDiffuseCoeff", new Color(0.8f, 0.8f, 0.8f));
+			Shader.setColor(gl, "torchSpecularCoeff", new Color(0.3f, 0.3f, 0.3f));
+			Shader.setPoint3D(gl, "cameraPos", camera.getPosition());
+			Shader.setFloat(gl, "cutoff", 10f);
+			Shader.setFloat(gl, "attentExp", 128f);
+			System.out.println("MAGIC CASTLE");
 		} else {
-			Shader.setColor(gl, "lightIntensity", this.lightIntensity);
-			Shader.setColor(gl, "sunlightIntensity", this.sunlightIntensity);
-			Shader.setColor(gl, "ambientIntensity", this.ambientIntensity);
+			Shader.setInt(gl, "torch", 0);
 		}
+
+		
 		terrain.draw(gl, frame);
 		avatar.display(gl, avatarFame);
 	}
@@ -105,24 +136,26 @@ public class World extends Application3D implements KeyListener{
 		super.init(gl);
 		getWindow().addKeyListener(this.camera);
 		getWindow().addKeyListener(this);
-		sunPos = this.terrain.getSunlight().asPoint3D();
+		
 		Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl",
 				"shaders/fragment_tex_phong.glsl");
 		shader.use(gl);
 		
 		// Set the lighting properties
-		Shader.setPoint3D(gl, "lightPos", sunPos);
+		//Shader.setPoint3D(gl, "lightPos", sunPos);
+		//Shader.setColor(gl, "sunlightIntensity", Color.WHITE);
+		//get the sun initial position
+		this.initSunPos = this.terrain.getSunlight().asPoint3D();
+		this.sunPos = this.terrain.getSunlight().asPoint3D();
 
 		// Set the material properties
-		Shader.setColor(gl, "ambientCoeff", Color.WHITE);
-		Shader.setColor(gl, "diffuseCoeff", new Color(0.6f, 0.6f, 0.6f));
-		Shader.setColor(gl, "specularCoeff", new Color(0.3f, 0.3f, 0.3f));
-		Shader.setFloat(gl, "phongExp", 16f);
-		Shader.setInt(gl, "tex", 0);
-		Shader.setPoint3D(gl, "viewPosition", camera.getPosition());
+		
 
 		terrain.init(gl);
 		avatar.init(gl);
+		gl.glEnable(GL2.GL_POLYGON_OFFSET_FILL);
+		gl.glEnable(GL2.GL_POLYGON_OFFSET_LINE);
+		gl.glEnable(GL2.GL_POLYGON_OFFSET_POINT);
 
 	}
 
@@ -160,16 +193,21 @@ public class World extends Application3D implements KeyListener{
 			//make night time boolean the opposite
 			this.night = this.night == true ? false : true;
 			if(night) {
-				this.lightIntensity = new Color(0.3f, 0.3f, 0.3f);
-				this.sunlightIntensity = new Color(0.3f, 0.3f, 0.3f);
+				this.specularCoeff = new Color(0.1f, 0.1f, 0.1f);
+				this.diffuseCoeff = new Color(0.1f, 0.1f, 0.1f);
 				this.ambientIntensity = new Color(0.2f, 0.2f, 0.2f);
 				System.out.println("WE ARE IN NIGHT MODE");
 			} else {
-				this.lightIntensity = Color.WHITE;
-				this.sunlightIntensity = Color.WHITE;
-				this.ambientIntensity = new Color(0.3f, 0.3f, 0.3f);
+				this.specularCoeff = new Color(0.3f, 0.3f, 0.3f);
+				this.diffuseCoeff = new Color(0.6f, 0.6f, 0.6f);
+				this.ambientIntensity = new Color(0.4f, 0.4f, 0.4f);
 				System.out.println("WE ARE IN DAY MODE");
 			}
+		} else if (keyCode == KeyEvent.VK_D) {
+			//praise the sun - ds3
+			this.movingSun = this.movingSun == true ? false : true;
+			this.sunPos = this.initSunPos;
+			this.starttime = System.currentTimeMillis();
 		}
 		
 	}
