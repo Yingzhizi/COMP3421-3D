@@ -1,13 +1,6 @@
 package unsw.graphics.world;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.KeyListener;
-import unsw.graphics.Vector3;
-import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
 import unsw.graphics.*;
@@ -15,24 +8,20 @@ import unsw.graphics.*;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 
+/**
+ * The character can move around in the world
+ */
 public class Avatar {
     private Point3D position;
     float rotateX, rotateY, rotateZ;
-    float scale;
     private Texture texture;
     private TriangleMesh mesh;
-    private static final float RUN_SPEED = 0.1f;
-    private static final float TURN_SPEED = 1.5f;
-
-    private float currentSpeed = 0;
-    private float currentTurnSpeed = 0;
 
     public Avatar(Point3D position, float rX, float rY, float rZ) {
         this.position = position;
         this.rotateX = rX;
         this.rotateY = rY;
         this.rotateZ = rZ;
-
     }
 
     /**
@@ -68,14 +57,19 @@ public class Avatar {
         return rotateZ;
     }
 
-    public float getScale() {
-        return scale;
-    }
 
+    /**
+     * get the position of avatar
+     * @return
+     */
     public Point3D getPosition() {
         return position;
     }
-    //initiate tree, create triangleMesh from ply file
+
+    /**
+     * create the triangle mesh for avatar, also add texture to it
+     * @param gl
+     */
     public void init(GL3 gl) {
         try {
             mesh = new TriangleMesh("res/models/bunny_res2.ply", true, true);
@@ -86,6 +80,11 @@ public class Avatar {
         }
     }
 
+    /**
+     * draw the triangle mesh of avatar
+     * @param gl
+     * @param frame
+     */
     public void display(GL3 gl, CoordFrame3D frame) {
         // move the frame to the right position
         frame = frame.translate(getPosition().getX(), getPosition().getY()-0.05f, getPosition().getZ()).rotateY(-85);

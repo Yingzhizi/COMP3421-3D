@@ -2,29 +2,25 @@ package unsw.graphics.world;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
-import com.jogamp.opengl.GL3;
 
 import unsw.graphics.CoordFrame3D;
 import unsw.graphics.geometry.Point3D;
 
-import java.awt.*;
-
 
 public class Camera implements KeyListener {
+
     // position of the camera
     private Point3D position;
 
-    // the speed of the camera run
+    // the speed of the camera run forward and backward
     private static final float runSpeed = 0.1f;
-    private static final float turnSpeed = 1.5f;
-    private float pitch;
-    private float yaw;
-    private float roll;
+
+    // the speed of the camera turning around
+    private static final float turnSpeed = 2f;
+
+    // set the initial direction it facing as rotate
     private float rotate = -150;
-    private float distanceFromAvatar = 30;
-    private float angleAroundAvatar = 0;
     private boolean thirdPerson = false;
-    private Avatar avatar;
 
     // pass into the terrain we need to load
     private Terrain myTerrain;
@@ -34,50 +30,51 @@ public class Camera implements KeyListener {
     private float rotateY = 0;
     private float rotateZ = 0;
 
+    /**
+     * initialise the camera by given position and pass terrain into it
+     * @param position
+     * @param terrain
+     */
     public Camera(Point3D position, Terrain terrain) {
         this.position = position;
         this.myTerrain = terrain;
     }
 
+    /**
+     * get the position of the camera
+     * @return
+     */
     public Point3D getPosition() {
         return position;
     }
 
-    public float getPitch() {
-        return this.pitch;
-    }
-
-    public float getYaw() {
-        return this.yaw;
-    }
-
-    public float getRoll() {
-        return this.roll;
-    }
-
+    /**
+     * movement of the camera
+     * @param e the key we press
+     */
     @Override
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
-        //should of checked to see if we were in terrain but ran out of time
-        //will implement in final milestone
         if(keyCode == KeyEvent.VK_UP) {
-        	//moves forwards
+        	// moves forwards
+            // update the position of the camera
             rotateX -= runSpeed * Math.sin(Math.toRadians(rotate));
             rotateZ -= runSpeed * Math.cos(Math.toRadians(rotate));
             this.position = new Point3D(rotateX, myTerrain.altitude(rotateX, rotateZ), rotateZ);
         } else if(keyCode == KeyEvent.VK_DOWN) {
-        	//moves backwards
+        	// moves backwards
+            // update the position of the camera
         	rotateX += runSpeed * Math.sin(Math.toRadians(rotate));
         	rotateZ += runSpeed * Math.cos(Math.toRadians(rotate));
             this.position = new Point3D(rotateX, myTerrain.altitude(rotateX, rotateZ), rotateZ);
         }
-
         // when turn left or right, camera's position stay the same
+        // but need to update the position camera facing
         else if(keyCode == KeyEvent.VK_LEFT) {
-        	//moves left
+        	//turn left
         	rotate += turnSpeed;
         } else if(keyCode == KeyEvent.VK_RIGHT) {
-        	//moves right
+        	//turn right
         	rotate -= turnSpeed;
         }
 
@@ -89,12 +86,12 @@ public class Camera implements KeyListener {
 
     }
 
-
+    /**
+     * reset the frame for camera
+     * @return updated frame
+     */
     public CoordFrame3D resetFrame() {
-        // update new cameraPosition
     	// calculate where Y axis of camera should be
-    	// reset the position of avatar, also the rotation
-    	// place camera
         CoordFrame3D frame = CoordFrame3D.identity();
         if (thirdPerson == false) {
             // place the camera position to avatar's position
@@ -104,16 +101,18 @@ public class Camera implements KeyListener {
             rotateY = myTerrain.altitude(rotateX, rotateZ) + 0.5f;
             frame = frame.translate(0f,-0.3f,-1.5f).rotateY(-rotate).translate(-rotateX, -rotateY, -rotateZ);
         }
-    	//System.out.println("Rotate  Y: " + rotateY + "! Rotate Z: " + rotateZ + "! rotateX: " + rotateX);
     	return frame;
     }
 
+    /**
+     * reset the frame for avatar
+     * @return
+     */
     public CoordFrame3D resetAvatarFrame() {
-        // update new cameraPosition
-        //calculate where Y axis of camera should be
+        // calculate where Y axis of camera should be
         rotateY = myTerrain.altitude(rotateX, rotateZ) + 0.8f;
-
-        // reset the position of avatar, also the rotation
+        // reset the position of avatar
+        // because terrain has rotate, so avatar don't need to actually rotate
         CoordFrame3D frame = CoordFrame3D.identity();
         if (thirdPerson == false) {
             frame = frame.translate(0f,-0.3f,-0.1f).translate(-rotateX, -rotateY, -rotateZ);
@@ -124,49 +123,26 @@ public class Camera implements KeyListener {
     }
 
 
+    /**
+     * get the position of updated position of avatar
+     * @return
+     */
     public Point3D getNewPos() {
         return new Point3D(rotateX, rotateY-0.5f, rotateZ);
     }
 
+    /**
+     * get the direction of camera
+     * @return
+     */
     public float getRotate() {
         return this.rotate;
     }
 
-    private void calculateZoom(KeyEvent e) {
-        int keyCode = e.getKeyCode();
-        if (keyCode == KeyEvent.VK_Z) {
-            float zoomLevel = 0.5f;
-            distanceFromAvatar -= zoomLevel;
-        } else if (keyCode == KeyEvent.VK_X) {
-            float zoomLevel = 0.5f;
-            distanceFromAvatar += zoomLevel;
-        }
-
-    }
-
-    private void calculatePitch(KeyEvent e) {
-        int keyCode = e.getKeyCode();
-        float pitchChange = 0;
-        if (keyCode == KeyEvent.VK_S) {
-            pitchChange = -0.5f;
-        } else if (keyCode == KeyEvent.VK_W) {
-            pitchChange = 0.5f;
-        }
-        pitch += pitchChange;
-
-    }
-
-    private void calculateAngleAround(KeyEvent e) {
-        int keyCode = e.getKeyCode();
-        float angle = 0;
-        if (keyCode == KeyEvent.VK_A) {
-            angle = 0.7f;
-        } else if (keyCode == KeyEvent.VK_D) {
-            angle = -0.7f;
-        }
-        angleAroundAvatar += angle;
-    }
-
+    /**
+     * switch between first player mode and third player mode
+     * @param e
+     */
     private void switchView(KeyEvent e) {
         int keyCode = e.getKeyCode();
         if (keyCode == KeyEvent.VK_C) {
@@ -177,22 +153,4 @@ public class Camera implements KeyListener {
             }
         }
     }
-
-    private float calculatingHorizontalDistance() {
-        return distanceFromAvatar * (float)Math.cos(Math.toRadians(pitch));
-    }
-
-    private float calculateVerticalDistance() {
-        return distanceFromAvatar * (float)Math.sin(Math.toRadians(pitch));
-    }
-
-//    private void calculateCameraPosition(float horiDistance, float verticeDistance) {
-//        float theta = avatar.getRotateY() + angleAroundAvatar;
-//        float offsetX = horiDistance * (float)Math.sin(Math.toRadians(theta));
-//        float offsetZ = horiDistance * (float)Math.cos(Math.toRadians(theta));
-//        float newX = avatar.getPosition().getX() - offsetX;
-//        float newY = avatar.getPosition().getY() + verticeDistance;
-//        float newZ = avatar.getPosition().getZ() - offsetZ;
-//
-//    }
 }

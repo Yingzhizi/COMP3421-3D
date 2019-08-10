@@ -1,12 +1,9 @@
 package unsw.graphics.world;
 
 import java.awt.*;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import com.jogamp.common.nio.Buffers;
 import unsw.graphics.Vector3;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
@@ -20,12 +17,11 @@ import com.jogamp.opengl.GL3;
 
 
 /**
- * COMMENT: Comment HeightMap
+ * Terrain for the world
  *
- * @author malcolmr
+ * @author Yingzhi Zhou
  */
 public class Terrain {
-
     private int width;
     private int depth;
     private float[][] altitudes;
@@ -36,9 +32,6 @@ public class Terrain {
     private Texture texture;
     private Texture treeTexture;
     private Texture roadTexture;
-    private static final int IMAGE_SIZE = 64;
-    private ByteBuffer chessImageBuf = Buffers.newDirectByteBuffer(IMAGE_SIZE*IMAGE_SIZE*4);
-
 
 
     /**
@@ -114,8 +107,7 @@ public class Terrain {
     public float altitude(float x, float z) {
         float altitude = 0;
 
-        // TODO: Implement this
-        // out of bound
+        // test if given x and z value out of bound, if it is, return 0
         if (x < 0 || x > width - 1 || z < 0 || z > depth - 1) {
             return altitude;
         }
@@ -126,62 +118,83 @@ public class Terrain {
         int topZ = (int)Math.ceil(z);
 
         // test point is above or below a line, or in the edges of square
-        // p1(leftX, topZ) p0(rightX, topZ)
-        // -----------
-        // |        /|
-        // |   I1  / |
-        // |    . /  |
-        // |     /   |
-        // |    /    |
-        // |   /  .  |
-        // |  /  I2  |
-        // | /       |
-        // |----------
+        // we save our triangle mesh we use square in the left
+        // when we doing bilinear calculation, use square on the right
+        // p0(zFloor)p1       p2(z ceil)p3
+        // -----------        -----------
+        // |        /|        |\        |
+        // |   I1  / |        | \       |
+        // |    . /  |        |  \      |
+        // |     /   | -----> |   \     |
+        // |    /    |        |    \    |
+        // |   /  .  |        |     \   |
+        // |  /  I2  |        |      \  |
+        // | /       |        |       \ |
+        // |---------|        |---------|
+        // p2(zCeil) p3       p0(zFloor)p1
 
         if((int)x == x && (int)z == z) {
             // if x and z are integer, directly return altitude
             altitude =  (float)getGridAltitude((int)x, (int)z);
+
         } else if ((int)x != x && (int)z == z) {
             // point is in bottom or top edges
             altitude =  linearInterPolateX(x, leftX, rightX, z, z);
+
         } else if ((int)x == x && (int)z != z) {
             // point is in left side or right side edges
             altitude = linearInterPolateZ(z, bottomZ, topZ, x, x);
+
         } else {
             // point is inside the 1 * 1 square
             float hypotenuse = topZ - z + leftX;
+
             if(x < hypotenuse) {
                 // in left triangle, above hypotenuse
                 float lipz1 = linearInterPolateZ(z, bottomZ, topZ, leftX, leftX);
                 float lipz2 = linearInterPolateZ(z, bottomZ, topZ, rightX, leftX);
                 altitude = bilinearInterpolate(x, (float)leftX, hypotenuse, lipz1, lipz2);
-                System.out.println("above: ");
+
             } else if (x > hypotenuse){
                 // in the right triangle, below hypotenuse
                 float lipz1 = linearInterPolateZ(z, bottomZ, topZ, rightX, leftX);
                 float lipz2 = linearInterPolateZ(z, bottomZ, topZ, rightX, rightX);
                 altitude = bilinearInterpolate(x, hypotenuse, (float)rightX, lipz1, lipz2);
-                System.out.println("below: ");
+
             } else {
+                // lie in the hypotenuse
                 altitude = linearInterPolateZ(z, bottomZ, topZ, rightX, leftX);
-                System.out.println("hypotenuse:");
             }
         }
+
         return altitude;
     }
 
     /**
-     * Use bilinear Interpolation to calculate the depth of the
+     * Use bilinear Interpolation to calculate the depth of the point has x coordinate x
      * @return
      */
-    private float bilinearInterpolate(float x, float x1, float hypotenuse, float lipz1, float lipz2) {
-    	return ((x - x1)/(hypotenuse - x1)) * lipz2 + ((hypotenuse - x)/(hypotenuse - x1)) * lipz1;
+    private float bilinearInterpolate(float x, float x1, float x2, float lipz1, float lipz2) {
+    	return ((x - x1)/(x2 - x1)) * lipz2 + ((x2 - x)/(x2 - x1)) * lipz1;
     }
 
+    /**
+     * Calculate the altitude of the intersection point which has z-coordinate value z in line
+     * which point1 (x1, z1) and point2 (x2, z2) lie on it.
+     * point1 is below point2, z1 less than z2
+     * @return altitude
+     */
     private float linearInterPolateZ(float z, float z1, float z2, float x1, float x2) {
     	return (float) (((z - z1) /(z2 - z1)) * getGridAltitude((int)x2, (int)z2) +
     			((z2 - z)/(z2 - z1)) * getGridAltitude((int)x1, (int)z1));
     }
+
+    /**
+     * Calculate the altitude of the intersection point which has x-coordinate value x in line
+     * which point1 (x1, z1) and point2 (x2, z2) lie on it.
+     * point1 is in the left point2, x1 less than x2
+     * @return altitude
+     */
     private float linearInterPolateX(float x, float x1, float x2, float z1, float z2) {
     	return (float) (((x - x1) / (x2 - x1)) * getGridAltitude((int)x2, (int)z2)
     			+ ((x2 - x) / (x2 - x1)) * getGridAltitude ((int)x1, (int)z1));
@@ -201,15 +214,23 @@ public class Terrain {
     }
 
 
+    /**
+     * initialise triangle mesh for all the tree in tree list
+     * @param gl
+     */
     public void initTree(GL3 gl) {
         for (Tree tree : trees) {
             tree.initTree(gl, this.treeTexture);
         }
     }
 
+    /**
+     * draw the triangle mesh of each tree
+     * @param gl
+     * @param frame
+     */
     public void drawTree(GL3 gl, CoordFrame3D frame) {
         initTree(gl);
-        // set shader color
         Shader.setInt(gl, "tex", 0);
         gl.glActiveTexture(GL.GL_TEXTURE0);
         gl.glBindTexture(GL.GL_TEXTURE_2D, this.treeTexture.getId());
@@ -219,25 +240,20 @@ public class Terrain {
         }
     }
     /**
-     * Add a road.
-     *
+     * Add roads to terrain
      */
     public void addRoad(float width, List<Point2D> spine) {
         Road road = new Road(width, spine);
         roads.add(road);
     }
 
-//    public void initRoad(GL3 gl) {
-//        for (Road road : roads) {
-//        	System.out.println("FUCKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK");
-//            road.init(gl, this.roadTexture);
-//        }
-//    }
-//    
-    
+
+    /**
+     *  draw the triangle mesh of each road
+     * @param gl
+     * @param frame
+     */
     public void drawRoad(GL3 gl, CoordFrame3D frame) {
-        //initRoad(gl);
-        // set shader color
         Shader.setInt(gl, "tex", 0);
         gl.glActiveTexture(GL.GL_TEXTURE0);
         gl.glBindTexture(GL.GL_TEXTURE_2D, this.roadTexture.getId());
@@ -247,21 +263,40 @@ public class Terrain {
         Shader.setPenColor(gl, Color.WHITE);
     }
 
-    public void initTerrian(GL3 gl) {
+    /**
+     * initialise the triangle mesh for terrain according to the width and depth
+     * @param gl
+     */
+    public void initTerrain(GL3 gl) {
         ArrayList<Point3D> allVertices = new ArrayList<>();
         ArrayList<Point2D> textureCoords = new ArrayList<>();
 
+        // topLeft     topRight
+        //    -----------
+        //    |        /|
+        //    |   I1  / |
+        //    |    . /  |
+        //    |     /   |
+        //    |    /    |
+        //    |   /  .  |
+        //    |  /  I2  |
+        //    | /       |
+        //    |---------|
+        // bottomLeft   bottomRight
+
         for (int x = 0; x < width - 1; x++) {
             for (int z = 0; z < depth - 1; z++) {
-                // add left triangle
+                // compute all vertices for each square
                 Point3D topLeft = new Point3D((float)x, (float)getGridAltitude(x, z), (float)z);
                 Point3D bottomLeft = new Point3D((float)x, (float)getGridAltitude(x, z + 1), (float)z + 1);
                 Point3D topRight = new Point3D((float)x + 1, (float)getGridAltitude(x + 1, z), (float)z);
                 Point3D bottomRight = new Point3D((float)x + 1, (float)getGridAltitude(x + 1, z + 1), (float)z + 1);
 
+                // add left triangle
                 allVertices.add(topLeft);
                 allVertices.add(bottomLeft);
                 allVertices.add(topRight);
+
                 // add current vertex to texture array
                 textureCoords.add(new Point2D((float)x, (float)z));
                 textureCoords.add(new Point2D((float)x, (float)z + 1));
@@ -284,7 +319,10 @@ public class Terrain {
         terrainMesh.init(gl);
     }
 
-    // add texture to terrain
+    /**
+     * load all the textures we need in this terrain
+     * @param gl
+     */
     public void loadTexture(GL3 gl) {
         this.texture = new Texture(gl, "res/textures/grass.png", "png", true);
         this.treeTexture = new Texture(gl, "res/textures/tree.png", "png", true);
@@ -294,47 +332,23 @@ public class Terrain {
         }
     }
 
+    /**
+     * draw the triangle mesh of terrain
+     * @param gl
+     * @param frame
+     */
     public void drawTerrain(GL3 gl, CoordFrame3D frame) {
         Shader.setInt(gl, "tex", 0);
         gl.glActiveTexture(GL.GL_TEXTURE0);
         gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
         Shader.setPenColor(gl, Color.WHITE);
-
         terrainMesh.draw(gl, frame);
 
     }
 
-//    public void initGround(GL3 gl) {
-//        //Build the meshes
-//        List<Point3D> grassVerts = new ArrayList<>();
-//        grassVerts.add(new Point3D(-100, 0, 100));
-//        grassVerts.add(new Point3D(100, 0, 100));
-//        grassVerts.add(new Point3D(100, 0, -100));
-//        grassVerts.add(new Point3D(-100, 0, -100));
-//
-//        List<Point2D> grassTexCoords = new ArrayList<>();
-//        grassTexCoords.add(new Point2D(0, 0));
-//        grassTexCoords.add(new Point2D(8, 0));
-//        grassTexCoords.add(new Point2D(8, 8));
-//        grassTexCoords.add(new Point2D(0, 8));
-//
-//        List<Integer> grassIndices = Arrays.asList(0,1,2, 0,2,3);
-//
-//        grass = new TriangleMesh(grassVerts, grassIndices, false, grassTexCoords);
-//        grass.init(gl);
-//    }
-//
-//    public void drawGround(GL3 gl, CoordFrame3D frame) {
-//        Shader.setInt(gl, "tex", 0);
-//        gl.glActiveTexture(GL.GL_TEXTURE0);
-//        gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
-//        Shader.setPenColor(gl, Color.WHITE);
-//        grass.draw(gl, frame);
-//    }
-
 
     public void init(GL3 gl) {
-        initTerrian(gl);
+        initTerrain(gl);
         // load texture of terrain
         loadTexture(gl);
     }

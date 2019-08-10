@@ -18,7 +18,7 @@ import unsw.graphics.geometry.Point3D;
  * @author Robert Clifton-Everest
  *
  */
-public class Vector3 {
+public class Vector3{
     private float[] values;
 
     /**

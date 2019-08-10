@@ -171,7 +171,7 @@ public class Road {
     	Point3D r = new Point3D(this.width/2, 0, 0);
     	
     	float roadAlt = getRoadAltitude(terr);
-    	float dt = (points.size()/6f)/this.segs;
+    	float dt = (points.size()/12f)/this.segs;
     	//create the vertices
     	for(float slice = 0f; slice <= size(); slice += dt) {
     		//get where the point is on the road

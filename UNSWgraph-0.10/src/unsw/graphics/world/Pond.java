@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Pond can been added to world
+ */
 public class Pond {
     private Point3D position;
     private float width;
@@ -26,28 +29,44 @@ public class Pond {
     private Texture pondTexture5;
     private Texture pondTexture6;
 
-
+    /**
+     * generate a pond by entering it's position, width and length
+     */
     public Pond(float x, float y, float z, float width, float length) {
         this.position = new Point3D(x, y, z);
         this.width  = width;
         this.length = length;
     }
 
+    /**
+     * get position of the pond
+     * @return
+     */
     public Point3D getPosition() {
         return position;
     }
 
+    /**
+     * get width of the pond
+     * @return
+     */
     public float getWidth() {
         return width;
     }
 
+    /**
+     * get lenght of the pond
+     * @return
+     */
     public float getLength() {
         return length;
     }
 
-    //initiate tree, create triangleMesh from ply file
+    /**
+     * generate triangle mesh for pond and add textures to it to make it animates
+     * @param gl
+     */
     public void init(GL3 gl) {
-        //this.pondTexture = tex;
         List<Point3D> pondsVertices = new ArrayList<>();
         Point3D topLeft = new Point3D(this.position.getX() - length/2, 0, this.position.getZ() + width/2);
         Point3D bottomLeft = new Point3D(this.position.getX() - length/2, 0, this.position.getZ() - width/2);
@@ -78,6 +97,11 @@ public class Pond {
         this.pondTexture6 = new Texture(gl, "res/textures/water6.png", "png", true);
     }
 
+    /**
+     * draw the triangle mesh of pond and create textures array
+     * @param gl
+     * @param frame
+     */
     public void draw(GL3 gl, CoordFrame3D frame) {
         frame = frame.translate(0, 0.1f, 0);
 

@@ -1,7 +1,6 @@
 package unsw.graphics.world;
 
 import java.awt.*;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,17 +14,14 @@ import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
 import unsw.graphics.*;
 
-import com.jogamp.newt.event.KeyListener;
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GL3;
 
-import java.util.concurrent.TimeUnit;
 
 /**
  * COMMENT: Comment Game
  *
- * @author malcolmr
+ * @author Yingzhi Zhou / Francis Dong
  */
 public class World extends Application3D implements KeyListener{
 
@@ -41,10 +37,6 @@ public class World extends Application3D implements KeyListener{
 	private TriangleMesh ground;
 	private Texture groundTexture;
 
-	private Point2D myMousePoint = null;
-	private static final int ROTATION_SCALE = 1;
-	private float rotateX = 0;
-	private float rotateY = 0;
 	private Point3D sunPos;
 	private Point3D initSunPos;
 	private float sunAngle;
@@ -67,38 +59,35 @@ public class World extends Application3D implements KeyListener{
 
     /**
      * Load a level file and display it.
-     *
      * @param args - The first argument is a level file in JSON format
      * @throws FileNotFoundException
      */
     public static void main(String[] args) throws FileNotFoundException {
-        Terrain terrain = LevelIO.load(new File("/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test1.json"));//"/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test4.json"));
+        Terrain terrain = LevelIO.load(new File("/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test1.json"));
         World world = new World(terrain);
         world.start();
     }
 
+	/**
+	 * display my world
+	 * @param gl
+	 */
 	@Override
-	//test
 	public void display(GL3 gl) {
 		super.display(gl);
-		//Shader.setPenColor(gl, Color.GREEN);
-		//CoordFrame3D frame = CoordFrame3D.identity().translate(0, 0, -2.4f).scale(0.3f, 0.3f, 0.3f).rotateX(rotateX).rotateY(rotateY);
 
-		// change with camera
+		//reset the frame, change with camera, avatar has different frame as terrain
 		CoordFrame3D frame = camera.resetFrame();
 		CoordFrame3D avatarFame = camera.resetAvatarFrame();
+
 		// reset the position of avatar, also the rotation
 		avatar.setPosition(camera.getNewPos());
 		avatar.increaseRotation(0, camera.getRotate(),0);
-		//System.out.println("new x:" + avatar.getPosition().getX() + ";" + "new y: " + avatar.getPosition().getY() + "; new z" + avatar.getPosition().getZ());
-//		Shader.setViewMatrix(gl, camera.getMatrix());
 
 		//set the lighting property
 		Shader.setPoint3D(gl, "lightPos", sunPos);
 		Shader.setColor(gl, "ambientIntensity", this.ambientIntensity);
 		Shader.setColor(gl, "lightIntensity", Color.WHITE);
-
-		
 		//material property
 		Shader.setColor(gl, "ambientCoeff", Color.WHITE);
 		Shader.setColor(gl, "diffuseCoeff", this.diffuseCoeff);
@@ -118,7 +107,7 @@ public class World extends Application3D implements KeyListener{
 			Shader.setPoint3D(gl, "torchDirection", new Point3D(0,0, -1));
 			Shader.setColor(gl, "torchDiffuseCoeff", new Color(0.8f, 0.8f, 0.8f));
 			Shader.setColor(gl, "torchSpecularCoeff", new Color(0.3f, 0.3f, 0.3f));
-			Shader.setPoint3D(gl, "cameraPos", camera.getPosition());
+			Shader.setPoint3D(gl, "cameraPos", avatar.getPosition());
 			Shader.setFloat(gl, "cutoff", 10f);
 			Shader.setFloat(gl, "attentExp", 128f);
 			Shader.setColor(gl, "skyColor", Color.GRAY);
@@ -128,8 +117,11 @@ public class World extends Application3D implements KeyListener{
 			Shader.setColor(gl, "skyColor", Color.WHITE);
 		}
 
+		// draw terrain and avatar
 		terrain.draw(gl, frame);
 		avatar.display(gl, avatarFame);
+
+		// switch textures for pond, different frame using different texture
 		totaltimepassed += 0.02;
 		if (totaltimepassed < 0.1) {
 			Shader.setInt(gl, "tex", 0);
@@ -146,8 +138,11 @@ public class World extends Application3D implements KeyListener{
 		} else {
 			totaltimepassed = 0;
 		}
+
+		// draw pond for the world
 		pond.draw(gl, frame.translate(0, -0.095f, 0));
-		// somehow start switching
+
+		// draw ground for my world
 		drawGround(gl, frame);
 
 	}
@@ -166,21 +161,16 @@ public class World extends Application3D implements KeyListener{
 		super.init(gl);
 		getWindow().addKeyListener(this.camera);
 		getWindow().addKeyListener(this);
-		
 		Shader shader = new Shader(gl, "shaders/vertex_tex_phong.glsl",
 				"shaders/fragment_tex_phong.glsl");
 		shader.use(gl);
 		
 		// Set the lighting properties
-		//Shader.setPoint3D(gl, "lightPos", sunPos);
-		//Shader.setColor(gl, "sunlightIntensity", Color.WHITE);
-		//get the sun initial position
+		// set the sun initial position
 		this.initSunPos = this.terrain.getSunlight().asPoint3D();
 		this.sunPos = this.terrain.getSunlight().asPoint3D();
 
-		// Set the material properties
-		
-
+		// start initiating of terrain, avatar, pond and ground
 		terrain.init(gl);
 		avatar.init(gl);
 		pond.init(gl);
@@ -194,26 +184,11 @@ public class World extends Application3D implements KeyListener{
         Shader.setProjMatrix(gl, Matrix4.perspective(60, width/(float)height, 1, 100));
 	}
 
-//	private void switchView(KeyEvent e) {
-//		int keyCode = e.getKeyCode();
-//		if (keyCode == KeyEvent.VK_C) {
-//			if (this.thirdPlayer == false) {
-//				this.thirdPlayer = true;
-//			} else {
-//				this.thirdPlayer = false;
-//			}
-//		}
-//	}
-//
-//	@Override
-//	public void keyPressed(KeyEvent e) {
-//		switchView(e);
-//	}
-//
-//	@Override
-//	public void keyReleased(KeyEvent keyEvent) {
-//
-//	}
+	/**
+	 * function to draw triangle mesh for ground and initialise it
+	 * also add texture to it
+	 * @param gl
+	 */
     public void initGround(GL3 gl) {
         //Build the meshes
         List<Point3D> grassVerts = new ArrayList<>();
@@ -235,7 +210,12 @@ public class World extends Application3D implements KeyListener{
 		this.groundTexture = new Texture(gl, "res/textures/grass.png", "png", true);
     }
 
-    public void drawGround(GL3 gl, CoordFrame3D frame) {
+	/**
+	 * draw ground for my world
+	 * @param gl
+	 * @param frame
+	 */
+	public void drawGround(GL3 gl, CoordFrame3D frame) {
         Shader.setInt(gl, "tex", 0);
         gl.glActiveTexture(GL.GL_TEXTURE0);
         gl.glBindTexture(GL.GL_TEXTURE_2D, groundTexture.getId());
@@ -247,8 +227,7 @@ public class World extends Application3D implements KeyListener{
 	public void keyPressed(KeyEvent e) {
 		int keyCode = e.getKeyCode();
 		if(keyCode == KeyEvent.VK_N) {
-			//System.out.println("NIGHT TIME LOSER");
-			//make night time boolean the opposite
+			// make night time boolean the opposite
 			this.night = this.night == true ? false : true;
 			if(night) {
 				this.specularCoeff = new Color(0.1f, 0.1f, 0.1f);
@@ -275,5 +254,6 @@ public class World extends Application3D implements KeyListener{
 		// TODO Auto-generated method stub
 		
 	}
+
 
 }
