@@ -22,8 +22,6 @@ import unsw.graphics.geometry.TriangleMesh;
  */
 public class Road {
 
-	//road needs to be drawn on a terrain
-	//private Terrain terrain;
 	private TriangleMesh roadMesh;
     private List<Point2D> points;
     private float width;
@@ -95,6 +93,12 @@ public class Road {
         return new Point2D(x, y);
     }
     
+    /**
+     * Calculate the tangent point on the spine
+     * 
+     * @param t
+     * @return
+     */
     public Point2D tangent(float t) {
     	int i = (int)Math.floor(t);
         t = t - i;
@@ -106,8 +110,8 @@ public class Road {
         Point2D p2 = points.get(i++);
         Point2D p3 = points.get(i++);
         
-        float x = b_deriv(0, t) * (p1.getX() - p0.getX()) + b_deriv(1, t) * (p2.getX() - p1.getX()) + b_deriv(2, t) * (p3.getX() - p2.getX());
-        float y = b_deriv(0, t) * (p1.getY() - p0.getY()) + b_deriv(1, t) * (p2.getY() - p1.getY()) + b_deriv(2, t) * (p3.getY() - p2.getY());
+        float x = 3 * (b_deriv(0, t) * (p1.getX() - p0.getX()) + b_deriv(1, t) * (p2.getX() - p1.getX()) + b_deriv(2, t) * (p3.getX() - p2.getX()));
+        float y = 3 * (b_deriv(0, t) * (p1.getY() - p0.getY()) + b_deriv(1, t) * (p2.getY() - p1.getY()) + b_deriv(2, t) * (p3.getY() - p2.getY()));
 
         return new Point2D(x, y);
     }
@@ -140,58 +144,69 @@ public class Road {
         throw new IllegalArgumentException("" + i);
     }
     
+    /**
+     * 
+     * Bezier derivative coefficient
+     * 
+     * @param i
+     * @param t
+     * @return
+     */
     private float b_deriv(int i, float t) {
         
         switch(i) {
         
         case 0:
-            return 3 * (1-t) * (1-t);
+            return (1-t) * (1-t);
 
         case 1:
-            return 3 * 2 * (1-t) * t;
+            return 2 * (1-t) * t;
             
         case 2:
-            return 3 * t * t;
+            return t * t;
         }
         
         // this should never happen
         throw new IllegalArgumentException("" + i);
     }
     
-//    public void init(GL3 gl, Texture texture) {
+
     public void drawRoad(GL3 gl, Terrain terr) {
+    	//texture coordinates
     	List<Point2D> texCoords = new ArrayList<Point2D>();
-    	List<Integer> indices = new ArrayList<>();
-//    	List<Point3D> indices = new ArrayList<>();
     	List<Point3D> vertices = new ArrayList<>();
+    	//creates the triangle in the road
+    	List<Integer> indices = new ArrayList<>();
     	List<Vector3> normals = new ArrayList<>();
     	
-    	//necessary for calculating left and right side of the road later
+    	//These are the left and right points of the road
     	Point3D l = new Point3D(-this.width/2, 0, 0);
     	Point3D r = new Point3D(this.width/2, 0, 0);
     	
+    	//lets get the altitude of the road
     	float roadAlt = getRoadAltitude(terr);
+    	//change in slice
     	float dt = (points.size()/12f)/this.segs;
-    	//create the vertices
+    	//Sample points along the spine with slice
     	for(float slice = 0f; slice <= size(); slice += dt) {
     		//get where the point is on the road
-    		//float t = slice * dt;
     		Point2D firstPt = point(slice);
     		//get the tangent
     		Point2D secondPt = tangent(slice);
-    		//if(secondPt.getX() == 0 && secondPt.getY() == 0) continue;
-    		//calculate the normal at the secondPoint
+    		if(secondPt.getX() == 0 && secondPt.getY() == 0) continue;
+    		//get the values of the frenet transformation matrix
     		Vector3 norm = new Vector3(secondPt.getX(), 0, secondPt.getY()).normalize();
     		Vector3 i = new Vector3(norm.getZ(), 0, -1 *norm.getX());
     		Vector3 j = norm.cross(i).normalize();
     		Vector3 phi = new Vector3(firstPt.getX(), roadAlt, firstPt.getY());
-    		
+    		//Create a frenet transformation matrix
     		Matrix4 frenetFrame = calcFrenetFrame(i, j , norm, phi);
     		
+    		//Calculate the left and right points of the road
     		Point3D leftSide = frenetFrame.multiply(l.asHomogenous()).asPoint3D();
     		Point3D rightSide = frenetFrame.multiply(r.asHomogenous()).asPoint3D();
     		
-    		//add to vetices
+    		//add to vertices
     		vertices.add(leftSide);
     		vertices.add(rightSide);
     	
@@ -199,28 +214,28 @@ public class Road {
     		texCoords.add(new Point2D(leftSide.getX(), leftSide.getZ()));
     		texCoords.add(new Point2D(rightSide.getX(), rightSide.getZ()));
     		
+    		//make sure we have 4 vertices to create our triangle's
+    		//for road
     		if(slice == 0f) continue;
-			int in1 = vertices.size() - 4;
-			int in2 = vertices.size() - 3;
-			int in3 = vertices.size() - 2;
-			int in4 = vertices.size() - 1;
-			
-			//add the index now
-			indices.addAll(Arrays.asList(in3, in4, in2));
-			normals.addAll(Arrays.asList(new Vector3(0,1,0),new Vector3(0,1,0),new Vector3(0,1,0)));
-			indices.addAll(Arrays.asList(in1, in3, in2));
-			normals.addAll(Arrays.asList(new Vector3(0,1,0), new Vector3(0,1,0), new Vector3(0,1,0)));
-
+    		//draw the two triangles
+    		createRoadTriangle(vertices.size(), indices, normals);
     	}
+    	//generate the Triangle mesh to draw road
     	this.roadMesh = new TriangleMesh(vertices, normals, indices, texCoords);
-    	//this.roadMesh = new TriangleMesh(vertTriMesh, true, roadTexCoord);
-    	this.roadMesh.init(gl);
     }
     
+    private void createRoadTriangle(int vs, List<Integer> i, List<Vector3> n) {
+    	//draw the two triangles with 4 vertices
+    	i.addAll(Arrays.asList(vs - 2, vs - 1, vs - 3));
+    	n.addAll(Arrays.asList(new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0)));
+    	i.addAll(Arrays.asList(vs - 4, vs - 2, vs - 3));
+    	n.addAll(Arrays.asList(new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0)));
+    }
+    
+    //initialise the road
     public void init(GL3 gl, Terrain t) {
     	drawRoad(gl, t);
-    	//this.roadMesh.init(gl);
-    	//System.out.println("I HATE 3421");
+    	this.roadMesh.init(gl);
     }
     
     //use to calculate the values of the frenet frame to draw the bezier curve
@@ -237,21 +252,13 @@ public class Road {
     	return t.altitude(x, y);
     }
 
-    
+    //draw road
     public void draw(GL3 gl, CoordFrame3D frame) {
     	CoordFrame3D rf = frame;
     	gl.glEnable(GL.GL_POLYGON_OFFSET_FILL);
     	gl.glPolygonOffset(-1f, -1f);
         roadMesh.draw(gl, rf);
         gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
-//        System.out.println("BITCHHHHHHHHHHHHHHHHHHHHHHHHH");
-       //.roadMesh.init(gl);
     }
     
-//    public void loadTexture(GL3 gl) {
-//    	this.texture = new Texture(gl, "res/textures/rock.bmp", "bmp", true);
-//    }
-
-
-
 }

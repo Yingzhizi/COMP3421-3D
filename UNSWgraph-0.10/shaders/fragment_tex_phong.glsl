@@ -61,7 +61,7 @@ void main()
     if(torch == 1) {
     	vec3 torchSpot = normalize(view_matrix*vec4(cameraPos, 1) - viewPosition).xyz;
     	float t = dot(-torchSpot, torchDirection);
-    	if(t > cos(radians(cutoff))) {
+    	if(t >= cos(radians(cutoff))) {
     		float distance = length(vec4(cameraPos, 0) - viewPosition);
     		float attenuation = 1.0/(1.0 + (0.006f * distance) + (0.004f * distance * distance));
     		diffuse = max(lightIntensity*torchDiffuseCoeff*dot(m,torchSpot), 0.0);

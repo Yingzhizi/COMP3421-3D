@@ -49,7 +49,7 @@ public class World extends Application3D implements KeyListener{
 	private Color specularCoeff = new Color(0.3f, 0.3f, 0.3f);
 
     public World(Terrain terrain) {
-    	super("Assignment 2", 800, 800);
+    	super("Assignment 2", 700, 700);
         this.terrain = terrain;
 		this.avatar = new Avatar(new Point3D(1, (float)terrain.getGridAltitude(1, 1), 1), 0, 0, 0);
         this.camera = new Camera(new Point3D(0f, 0f, 0f), terrain);
@@ -63,7 +63,7 @@ public class World extends Application3D implements KeyListener{
      * @throws FileNotFoundException
      */
     public static void main(String[] args) throws FileNotFoundException {
-        Terrain terrain = LevelIO.load(new File("/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test1.json"));
+        Terrain terrain = LevelIO.load(new File(args[0]));//"/Users/yingzhizhou/Desktop/COMP3421-3D/UNSWgraph-0.10/res/worlds/test1.json"));
         World world = new World(terrain);
         world.start();
     }
@@ -94,28 +94,40 @@ public class World extends Application3D implements KeyListener{
 		Shader.setColor(gl, "specularCoeff", this.specularCoeff);
 		Shader.setFloat(gl, "phongExp", 16f);
 
-		if(movingSun) {
-			long elapsedTime = System.currentTimeMillis() - this.starttime;
-			float timeInDay = ((float)elapsedTime % 15000f)/15000f;
-			this.sunAngle = (float) Math.toRadians(360 * timeInDay);
-			float updateX = ((float) Math.cos((double) this.sunAngle)*2f);
-			float updateY = ((float) Math.sin((double) this.sunAngle)*2f);
-			
-			this.sunPos = new Point3D(updateX, updateY, sunPos.getZ());
- 		} else if(night) {
+
+		//turn the torch at night
+		if(night) {
+ 			//control how the torch works at night
+ 			Vector4 td = new Vector4(0,0,-1,0);
 			Shader.setInt(gl, "torch", 1);
-			Shader.setPoint3D(gl, "torchDirection", new Point3D(0,0, -1));
+			Shader.setPoint3D(gl, "torchDirection", td.asPoint3D());
 			Shader.setColor(gl, "torchDiffuseCoeff", new Color(0.8f, 0.8f, 0.8f));
 			Shader.setColor(gl, "torchSpecularCoeff", new Color(0.3f, 0.3f, 0.3f));
-			Shader.setPoint3D(gl, "cameraPos", avatar.getPosition());
+			Shader.setPoint3D(gl, "cameraPos", new Point3D(0, 0, -1).translate(0, -0.5f, 0));
 			Shader.setFloat(gl, "cutoff", 10f);
 			Shader.setFloat(gl, "attentExp", 128f);
 			Shader.setColor(gl, "skyColor", Color.GRAY);
-			System.out.println("MAGIC CASTLE");
+			this.setBackground(Color.GRAY);
+		//just day time
 		} else {
 			Shader.setInt(gl, "torch", 0);
 			Shader.setColor(gl, "skyColor", Color.WHITE);
+			this.setBackground(Color.WHITE);
 		}
+		
+		//move the sun
+		if(movingSun) {
+			long elapsedTime = System.currentTimeMillis() - this.starttime;
+			float timeInDay = ((float)elapsedTime % 15000f)/10000f;
+			this.sunAngle = (float) Math.toRadians(360 * timeInDay);
+			float updateX = ((float) Math.cos((double) this.sunAngle)*1.2f);
+			float updateY = ((float) Math.sin((double) this.sunAngle)*1.2f);
+			this.sunPos = new Point3D(updateX, updateY, sunPos.getZ());
+			//update the color
+			float setSunColor = (float)Math.abs(Math.cos((Math.toRadians(90)+ sunAngle)/2));
+			System.out.println(setSunColor);
+			updateSkyCol(setSunColor);
+ 		}
 
 		// draw terrain and avatar
 		terrain.draw(gl, frame);
@@ -145,6 +157,18 @@ public class World extends Application3D implements KeyListener{
 		// draw ground for my world
 		drawGround(gl, frame);
 
+	}
+	
+	//update the color of the sky
+	private void updateSkyCol(float sunAngle) {
+		this.setBackground(new Color(
+			//get the red
+			(int)(126 - (sunAngle * 90)),
+			//get the green
+			(int)(192 - (sunAngle * 100)),
+			//get the blue
+			(int)(238 - (sunAngle * 120))
+		));
 	}
 
 	@Override
