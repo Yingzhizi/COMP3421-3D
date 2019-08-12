@@ -203,16 +203,13 @@ public class Road {
     		Matrix4 frenetFrame = calcFrenetFrame(i, j , norm, phi);
     		
     		//Calculate the left and right points of the road
-    		Point3D leftSide = frenetFrame.multiply(l.asHomogenous()).asPoint3D();
-    		Point3D rightSide = frenetFrame.multiply(r.asHomogenous()).asPoint3D();
-    		
     		//add to vertices
-    		vertices.add(leftSide);
-    		vertices.add(rightSide);
+    		vertices.add(frenetFrame.multiply(l.asHomogenous()).asPoint3D());
+    		vertices.add(frenetFrame.multiply(r.asHomogenous()).asPoint3D());
     	
     		//add to texture coord
-    		texCoords.add(new Point2D(leftSide.getX(), leftSide.getZ()));
-    		texCoords.add(new Point2D(rightSide.getX(), rightSide.getZ()));
+    		texCoords.add(new Point2D(frenetFrame.multiply(l.asHomogenous()).asPoint3D().getX(), frenetFrame.multiply(l.asHomogenous()).asPoint3D().getZ()));
+    		texCoords.add(new Point2D(frenetFrame.multiply(r.asHomogenous()).asPoint3D().getX(), frenetFrame.multiply(r.asHomogenous()).asPoint3D().getZ()));
     		
     		//make sure we have 4 vertices to create our triangle's
     		//for road

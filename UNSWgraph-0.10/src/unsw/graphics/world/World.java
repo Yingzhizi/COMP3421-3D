@@ -97,7 +97,7 @@ public class World extends Application3D implements KeyListener{
 
 		//turn the torch at night
 		if(night) {
- 			//control how the torch works at night
+ 			//set the torch property and set sky to gray
  			Vector4 td = new Vector4(0,0,-1,0);
 			Shader.setInt(gl, "torch", 1);
 			Shader.setPoint3D(gl, "torchDirection", td.asPoint3D());
